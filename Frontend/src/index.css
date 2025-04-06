@@ -1,1 +1,18 @@
 @import "tailwindcss";
+
+body {
+  @apply bg-white dark:bg-gray-900;
+}
+
+/* Add manual dark mode support */
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-white text-black;
+}
+
+html.dark body {
+  @apply bg-slate-900 text-white;
+}
