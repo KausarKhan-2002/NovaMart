@@ -2,7 +2,7 @@ import React from 'react'
 
 function Home() {
   return (
-    <div>
+    <div className="bg-slate-100/40">
       Home
     </div>
   )

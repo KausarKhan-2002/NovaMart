@@ -5,7 +5,6 @@ import { FiMenu } from "react-icons/fi";
 import { HiOutlineShoppingCart } from "react-icons/hi2";
 
 function DesktopNavbar({ sidebarOpen, setSidebarOpen, darkMode, setDarkMode }) {
-  console.log("Desktop");
 
   return (
     <div className="flex items-center space-x-4">
