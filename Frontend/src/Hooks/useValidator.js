@@ -42,8 +42,13 @@ const checkUsernameValidation = (username) => {
     return true;
   }
 
-  if (username.length < 4) {
-    toast.error("Username must be at least 4 characters long.");
+  if (username.length <= 4) {
+    toast.error("Username must be at least 4 characters long and maximum 30.");
+    return true;
+  }
+
+  if (username.length >= 30) {
+    toast.error("Username size limit exception, must be lesser than 30.");
     return true;
   }
 };

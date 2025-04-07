@@ -65,7 +65,7 @@ function Auth() {
     <div className="flex min-h-[91.5vh] items-center justify-center px-4">
       <div className="w-full max-w-sm p-6 backdrop-blur-lg border border-white/20 rounded-3xl shadow-xl overflow-hidden">
         <h2 className="text-3xl font-extrabold text-center text-slate-700">
-          {isSignup ? "Create Account" : "Welcome Back"}
+          {isSignup ? "Create Account" : "Login"}
         </h2>
 
         {isSignup && step === 1 && (
