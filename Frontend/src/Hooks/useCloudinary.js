@@ -21,8 +21,6 @@ export function useCloudinary() {
         `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`,
         formData
       );
-
-      console.log("Cloudinary Response:", res.data);
       setCloudinaryImg(res.data.secure_url);
       setTempUrl(null); // Remove temp preview after upload
     } catch (err) {

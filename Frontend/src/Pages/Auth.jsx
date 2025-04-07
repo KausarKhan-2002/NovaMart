@@ -8,6 +8,7 @@ import Login from "../Components/Author/Login";
 import { useCloudinary } from "../Hooks/useCloudinary";
 import CropperImage from "../Components/Author/CropperImage";
 import { useValidator } from "../Hooks/useValidator";
+import { useAuth } from "../Hooks/useAuth";
 
 function Auth() {
   const [isSignup, setIsSignup] = useState(false);
@@ -17,6 +18,7 @@ function Auth() {
   const [step, setStep] = useState(1);
   const [cloudinaryImg, setCloudinaryImg] = useState(null);
   const [showCropper, setShowCropper] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [userInfo, setUserInfo] = useState({
     username: "",
@@ -24,15 +26,14 @@ function Auth() {
     password: "",
     confirmPassword: "",
     gender: "",
-    dob: "",
+    DOB: "",
     cloudinaryImage: "",
   });
   // console.log(userInfo)
-  
-  
 
   const cloudinary = useCloudinary();
   const validate = useValidator();
+  const auth = useAuth();
 
   useEffect(() => {
     if (cloudinaryImg) {
@@ -50,7 +51,11 @@ function Auth() {
     }
 
     // Upload to Cloudinary
-    cloudinary(selectFile, setCloudinaryImg, setTempUrl);
+    if (isSignup) {
+      cloudinary(selectFile, setCloudinaryImg, setTempUrl);
+    }
+
+    auth(isSignup, setIsSignup, userInfo, setUserInfo, setLoading);
   };
 
   const handleFile = (e) => {
@@ -100,6 +105,7 @@ function Auth() {
               setStep={setStep}
               handleSubmit={handleSubmit}
               selectFile={selectFile}
+              loading={loading}
             />
           )}
 
@@ -110,6 +116,7 @@ function Auth() {
               showPassword={showPassword}
               setShowPassword={setShowPassword}
               handleSubmit={handleSubmit}
+              loading={loading}
             />
           )}
         </div>

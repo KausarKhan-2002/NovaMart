@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { BiShow, BiHide } from "react-icons/bi";
 import { getMaxiAllowedDOB } from "../Helpers/getMaxAllowedDOB";
+import { ImSpinner6 } from "react-icons/im";
+import Spinner from "../../Shared/Spinner";
 
 function SignupStep2({
   userInfo,
@@ -9,6 +11,7 @@ function SignupStep2({
   setShowPassword,
   setStep,
   handleSubmit,
+  loading,
 }) {
   const [gender, setGender] = useState("");
   const handleChange = (e) => {
@@ -64,7 +67,7 @@ function SignupStep2({
 
         <input
           type="date"
-          name="dob"
+          name="DOB"
           value={userInfo.dob || ""}
           onChange={handleChange}
           max={getMaxiAllowedDOB()}
@@ -80,13 +83,16 @@ function SignupStep2({
         >
           Back
         </button>
-        <button
-          onClick={handleSubmit}
-          type="submit"
-          className="px-6 py-2 text-lg font-semibold text-white bg-emerald-500 hover:bg-emerald-600 rounded-xl transition-all shadow-md cursor-pointer"
-        >
-          Sign Up
-        </button>
+        <div>
+          <button
+            onClick={handleSubmit}
+            type="submit"
+            className="flex items-center gap-2  px-6 py-2 text-lg font-semibold text-white bg-emerald-500 hover:bg-emerald-600 rounded-xl transition-all shadow-md cursor-pointer"
+          >
+            {loading && <Spinner activity="spin" />} Sign
+            Up
+          </button>
+        </div>
       </div>
     </>
   );

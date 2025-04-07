@@ -39,18 +39,28 @@ const userSchema = new mongoose.Schema(
       trim: true,
       required: [true, "Password is required"],
     },
+    cloudinaryImage: {
+      type: String, // no need to quote "String"
+      trim: true,
+      validate(url) {
+        if (url) {
+          const isValidUrl = validator.isURL(url);
+          if (!isValidUrl) throw new Error("Invalid image url");
+        }
+      },
+    },
     gender: {
       type: String,
       trim: true,
       required: [true, "Gender is required"],
-      enum: ["male", "female", "other"],
+      enum: ["male", "female", "others"],
     },
     DOB: {
       type: Date,
       default: Date.now(),
       trim: true,
       required: true,
-      validat(dob) {
+      validate(dob) {
         const isValidDOB = validator.isDate(dob);
         if (!isValidDOB) throw new Error("Invalid date of birth");
       },

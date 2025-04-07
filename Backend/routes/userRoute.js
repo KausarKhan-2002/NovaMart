@@ -7,7 +7,7 @@ const validator = require("validator");
 const { generateToken } = require("../config/generateToken");
 
 route.post("/signup", async (req, res) => {
-  const { username, email, password, gender, DOB } = req.body;
+  const { username, email, password, gender, DOB, cloudinaryImage } = req.body;
 
   try {
     // 1. Validate input
@@ -37,19 +37,33 @@ route.post("/signup", async (req, res) => {
         .json({ success: false, message: "Email or username already in use" });
     }
 
-    // 4. Hash password
+    // 4. Validate if Url exists
+    if (cloudinaryImage) {
+      const isValidUrl = validator.isURL(cloudinaryImage);
+      if (!isValidUrl) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid image url" });
+      }
+    }
+
+    console.log("chl");
+    
+
+    // 5. Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 5. Create new user
+    // 6. Create new user
     const newUser = await User.insertOne({
       username,
       email,
       password: hashedPassword,
       gender,
       DOB,
+      cloudinaryImage: cloudinaryImage || ""
     });
 
-    // 6. Exclude password before sending the response
+    // 7. Exclude password before sending the response
     const { password: _, ...userWithoutPassword } = newUser.toObject();
 
     res.status(201).json({
@@ -75,12 +89,10 @@ route.post("/login", async (req, res) => {
 
     // 2. Validate email format
     if (!validator.isEmail(email)) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Please enter a valid email address.",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Please enter a valid email address.",
+      });
     }
 
     // 3. Find user by email
@@ -95,12 +107,10 @@ route.post("/login", async (req, res) => {
     // 4. Compare password
     const isMatch = await bcrypt.compare(password, foundUser.password);
     if (!isMatch) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: "Incorrect password. Please try again.",
-        });
+      return res.status(401).json({
+        success: false,
+        message: "Incorrect password. Please try again.",
+      });
     }
 
     // 5. Generate token and set cookie
