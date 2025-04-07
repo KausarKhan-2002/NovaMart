@@ -77,7 +77,10 @@ route.post("/login", async (req, res) => {
     if (!validator.isEmail(email)) {
       return res
         .status(400)
-        .json({ success: false, message: "Please enter a valid email address." });
+        .json({
+          success: false,
+          message: "Please enter a valid email address.",
+        });
     }
 
     // 3. Find user by email
@@ -94,7 +97,10 @@ route.post("/login", async (req, res) => {
     if (!isMatch) {
       return res
         .status(401)
-        .json({ success: false, message: "Incorrect password. Please try again." });
+        .json({
+          success: false,
+          message: "Incorrect password. Please try again.",
+        });
     }
 
     // 5. Generate token and set cookie
@@ -108,7 +114,24 @@ route.post("/login", async (req, res) => {
       message: "Login successful. Welcome back!",
       user: userWithoutPassword,
     });
+  } catch (err) {
+    catchError(err, res);
+  }
+});
 
+route.post("/logout", async (req, res) => {
+  try {
+    res.cookie("jwt", "", {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production", // true in production
+      expires: new Date(0), // Expire immediately
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "User logged out successfully",
+    });
   } catch (err) {
     catchError(err, res);
   }
