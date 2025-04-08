@@ -5,6 +5,7 @@ const route = express.Router();
 const User = require("../models/userModel");
 const validator = require("validator");
 const { generateToken } = require("../config/generateToken");
+const { isAuthorised } = require("../middlewares/isAuthorised");
 
 route.post("/signup", async (req, res) => {
   const { username, email, password, gender, DOB, cloudinaryImage } = req.body;
@@ -46,9 +47,6 @@ route.post("/signup", async (req, res) => {
           .json({ success: false, message: "Invalid image url" });
       }
     }
-
-    console.log("chl");
-    
 
     // 5. Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -129,7 +127,7 @@ route.post("/login", async (req, res) => {
   }
 });
 
-route.post("/logout", async (req, res) => {
+route.post("/logout", isAuthorised, async (req, res) => {
   try {
     res.cookie("jwt", "", {
       httpOnly: true,

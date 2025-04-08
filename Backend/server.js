@@ -4,11 +4,11 @@ const cookieParser = require("cookie-parser");
 require("dotenv").config();
 const mongoose = require("mongoose");
 const { authRoute } = require("./routes/userRoute");
-
+const { profileRoute } = require("./routes/profileRoute");
 
 const app = express();
-const PORT = process.env.PORT
-const MONGODB_URI = process.env.MONGODB_URI
+const PORT = process.env.PORT;
+const MONGODB_URI = process.env.MONGODB_URI;
 
 app.use(express.json());
 app.use(
@@ -23,18 +23,23 @@ const connectionDB = async () => {
   try {
     if (mongoose.connection === 1) {
       console.log("Database is already connected");
-      app.listen(PORT, () => console.log(`Server is listening on ${PORT} PORT...`));
+      app.listen(PORT, () =>
+        console.log(`Server is listening on ${PORT} PORT...`)
+      );
       return;
     }
 
     await mongoose.connect(MONGODB_URI);
-    console.log("Database is connected successfully ✔️")
-    app.listen(PORT, () => console.log(`Server is listening on ${PORT} PORT...`));
+    console.log("Database is connected successfully ✔️");
+    app.listen(PORT, () =>
+      console.log(`Server is listening on ${PORT} PORT...`)
+    );
   } catch (err) {
     console.log("DB Error:", err.message);
   }
 };
 
-connectionDB()
+connectionDB();
 
-app.use("/auth", authRoute)
+app.use("/auth", authRoute);
+app.use("/profile", profileRoute);
