@@ -2,44 +2,44 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 
 /**
- * Middleware to check if user is authenticated using JWT stored in cookies.
+ * Middleware to check if user is authenticated using JWT (from cookies or Authorization header).
  */
 const isAuthorised = async (req, res, next) => {
   try {
-    // 1. Get token from cookies
-    const token = req.cookies?.jwt;
+    // 1️⃣ Get token from cookies or Authorization header
+    let token = req.cookies?.jwt;
 
-    // 2️. If token is missing, deny access
-    if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: "Access denied. No token provided.",
-      });
+    if (!token && req.headers.authorization?.startsWith("Bearer")) {
+      token = req.headers.authorization.split(" ")[1];
     }
 
-    // 3️. Verify the JWT token
+    // 2️⃣ If token is missing, deny access
+    if (!token) {
+      const err = new Error("Access denied. No token provided.");
+      err.statusCode = 401;
+      throw err;
+    }
+
+    // 3️⃣ Verify token
     const decoded = jwt.verify(token, process.env.JWT_SIGN);
 
-    // 4️. Extract userId from decoded token
+    // 4️⃣ Find user by ID (excluding password)
     const user = await User.findById(decoded.userId).select("-password");
-
-    // 5️. If user is not found in database
     if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized. User not found.",
-      });
+      const err = new Error("Unauthorized. User not found.");
+      err.statusCode = 401;
+      throw err;
     }
 
-    // 6️. Attach found user to the request object (excluding password)
+    // 5️⃣ Attach user to request
     req.user = user;
 
-    // 7️. Proceed to next middleware or route
+    // 6️⃣ Proceed
     next();
   } catch (error) {
-    console.error("Authorization error:", error.message);
+    console.error("Authorization Error:", error.message);
 
-    // 8️. Handle specific JWT errors
+    // 7️⃣ JWT Specific Errors
     if (error.name === "TokenExpiredError") {
       return res.status(401).json({
         success: false,
@@ -54,13 +54,13 @@ const isAuthorised = async (req, res, next) => {
       });
     }
 
-    // 9️. General server error
-    return res.status(500).json({
+    // 8️⃣ Custom status or fallback
+    const status = error.statusCode || 500;
+    res.status(status).json({
       success: false,
-      message: "Internal server error during authorization.",
+      message: error.message || "Authorization failed.",
     });
   }
 };
 
-
-module.exports = {isAuthorised};
+module.exports = { isAuthorised };

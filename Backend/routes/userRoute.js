@@ -11,65 +11,54 @@ route.post("/signup", async (req, res) => {
   const { username, email, password, gender, DOB, cloudinaryImage } = req.body;
 
   try {
-    // 1. Validate input
+    // 1️⃣ Validate input
     if (!username || !email || !password || !gender || !DOB) {
-      return res
-        .status(400)
-        .json({ success: false, message: "All fields are required." });
+      throw new Error("All fields are required.");
     }
 
-    // 2. validations on password
+    // 2️⃣ Validate password strength
     const isValidPassword = validator.isStrongPassword(password);
     if (!isValidPassword) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
-      });
+      throw new Error(
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character."
+      );
     }
 
-    // 3. Check if email or username already exists
-    const existingUser = await User.findOne({
-      $or: [{ email }, { username }],
-    });
+    // 3️⃣ Check if email already exists
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res
-        .status(409)
-        .json({ success: false, message: "Email or username already in use" });
+      throw new Error("Email or username already in use.");
     }
 
-    // 4. Validate if Url exists
-    if (cloudinaryImage) {
-      const isValidUrl = validator.isURL(cloudinaryImage);
-      if (!isValidUrl) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Invalid image url" });
-      }
+    // 4️⃣ Validate image URL if provided
+    if (cloudinaryImage && !validator.isURL(cloudinaryImage)) {
+      throw new Error("Invalid image URL.");
     }
 
-    // 5. Hash password
+    // 5️⃣ Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 6. Create new user
-    const newUser = await User.insertOne({
+    // 6️⃣ Create new user
+    const newUser = await User.create({
       username,
       email,
       password: hashedPassword,
       gender,
       DOB,
-      cloudinaryImage: cloudinaryImage || ""
+      cloudinaryImage: cloudinaryImage || "",
     });
 
-    // 7. Exclude password before sending the response
+    // 7️⃣ Exclude password from response
     const { password: _, ...userWithoutPassword } = newUser.toObject();
 
+    // 8️⃣ Send success response
     res.status(201).json({
       success: true,
       message: "User signup successful",
       user: userWithoutPassword,
     });
   } catch (err) {
+    // 9️⃣ Handle error centrally
     catchError(err, res);
   }
 });
@@ -78,45 +67,39 @@ route.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 1. Check if fields are missing
+    // 1️⃣ Check if fields are missing
     if (!email || !password) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Email and password are required." });
+      throw new Error("Email and password are required.");
     }
 
-    // 2. Validate email format
+    // 2️⃣ Validate email format
     if (!validator.isEmail(email)) {
-      return res.status(400).json({
-        success: false,
-        message: "Please enter a valid email address.",
-      });
+      throw new Error("Please enter a valid email address.");
     }
 
-    // 3. Find user by email
+    // 3️⃣ Find user by email
     const foundUser = await User.findOne({ email });
     if (!foundUser) {
-      return res.status(401).json({
-        success: false,
-        message: "No account found with this email. Please sign up first.",
-      });
+      const err = new Error("No account found with this email. Please sign up first.");
+      err.statusCode = 401;
+      throw err;
     }
 
-    // 4. Compare password
+    // 4️⃣ Compare password
     const isMatch = await bcrypt.compare(password, foundUser.password);
     if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        message: "Incorrect password. Please try again.",
-      });
+      const err = new Error("Incorrect password. Please try again.");
+      err.statusCode = 401;
+      throw err;
     }
 
-    // 5. Generate token and set cookie
+    // 5️⃣ Generate token and set cookie
     generateToken(foundUser._id, res);
 
-    // 6. Remove password before sending response
+    // 6️⃣ Remove password before sending response
     const { password: _, ...userWithoutPassword } = foundUser.toObject();
 
+    // 7️⃣ Final response
     res.status(200).json({
       success: true,
       message: "Login successful. Welcome back!",
@@ -126,6 +109,7 @@ route.post("/login", async (req, res) => {
     catchError(err, res);
   }
 });
+
 
 route.post("/logout", isAuthorised, async (req, res) => {
   try {
