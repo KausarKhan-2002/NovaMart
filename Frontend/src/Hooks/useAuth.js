@@ -2,9 +2,12 @@ import axios from "axios";
 import { BASE_URL } from "../Utils/constants";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { getUserProfile } from "../Store/userSlice";
 
 export const useAuth = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch()
 
   return async (isSignup, setIsSignup, userInfo, setUserInfo, setLoading) => {
     const endpoint = isSignup ? "/auth/signup" : "/auth/login";
@@ -22,8 +25,10 @@ export const useAuth = () => {
 
       toast.success(res.data.message || "Action successful");
       console.log(res.data.user);
+
       setLoading(false);
       setIsSignup(false);
+      dispatch(getUserProfile(res.data.user))
 
       // reset
       setUserInfo({

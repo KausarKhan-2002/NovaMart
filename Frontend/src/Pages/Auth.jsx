@@ -29,7 +29,6 @@ function Auth() {
     DOB: "",
     cloudinaryImage: "",
   });
-  // console.log(userInfo)
 
   const cloudinary = useCloudinary();
   const validate = useValidator();

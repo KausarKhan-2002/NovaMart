@@ -1,10 +1,36 @@
+import axios from "axios";
 import React from "react";
 import { BsMoon, BsSun } from "react-icons/bs";
 import { FaRegUser } from "react-icons/fa";
 import { FiMenu } from "react-icons/fi";
 import { HiOutlineShoppingCart } from "react-icons/hi2";
+import { useSelector } from "react-redux";
+import { BASE_URL } from "../../Utils/constants";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 function DesktopNavbar({ sidebarOpen, setSidebarOpen, darkMode, setDarkMode }) {
+  const user = useSelector((store) => store.user);
+  const navigate = useNavigate();
+
+  const handleLogInOut = async () => {
+    try {
+      if (!user) {
+        navigate("/auth");
+        return;
+      }
+      const res = await axios.post(
+        BASE_URL + "/auth/logout",
+        {},
+        { withCredentials: true }
+      );
+      console.log(res);
+      toast.success(res.data.message);
+    } catch (err) {
+      console.log("Error:", err.message);
+      // toast.error(res)/\
+    }
+  };
 
   return (
     <div className="flex items-center space-x-4">
@@ -28,8 +54,11 @@ function DesktopNavbar({ sidebarOpen, setSidebarOpen, darkMode, setDarkMode }) {
           </span>
         </button>
 
-        <button className="ml-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-1.5 rounded-full text-sm shadow">
-          Login
+        <button
+          onClick={handleLogInOut}
+          className="ml-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-1.5 rounded-full text-sm shadow cursor-pointer"
+        >
+          {user ? "Login" : "Login"}
         </button>
       </nav>
 

@@ -1,5 +1,6 @@
 import { BiShow, BiHide } from "react-icons/bi";
 import Spinner from "../../Shared/Spinner";
+import { ImSpinner6 } from "react-icons/im";
 
 function Login({
   userInfo,
@@ -7,7 +8,7 @@ function Login({
   showPassword,
   setShowPassword,
   handleSubmit,
-  loading
+  loading,
 }) {
   const handleChange = (e) => {
     setUserInfo((info) => ({ ...info, [e.target.name]: e.target.value }));
@@ -46,10 +47,12 @@ function Login({
       <button
         onClick={handleSubmit}
         type="submit"
-        
         className="flex items-center justify-center gap-3 w-full py-3 mt-2 text-lg font-semibold text-white bg-gradient-to-r from-emerald-500 to-green-500 hover:to-lime-500 rounded-xl transition-all shadow-lg hover:shadow-2xl cursor-pointer"
       >
-        {loading && <Spinner activity="spin" />} Log In
+        {loading && (
+          <Spinner activity="spin" />
+        )}
+        Log In
       </button>
     </>
   );

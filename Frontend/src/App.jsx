@@ -7,19 +7,20 @@ import { useProfile } from "./Hooks/useProfile";
 import { useSelector } from "react-redux";
 
 function App() {
-  const user = useSelector(store => store.user)
+  const user = useSelector((store) => store.user);
   console.log(user);
-  
 
-  const profile = useProfile()
+  const profile = useProfile();
 
   useEffect(() => {
-    profile()
-  }, [])
-  
+    profile();
+  }, []);
+
+  // if (!user) return;
+
   return (
     <div className="bg-slate-100">
-    <Toaster />
+      <Toaster />
       <Header />
       <MyOutlet />
       {/* <Footer /> */}

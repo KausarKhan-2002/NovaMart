@@ -13,7 +13,7 @@ export const useProfile = () => {
       });
       dispatch(getUserProfile(res?.data?.user || null));
     } catch (err) {
-      console.log("Error:", err.message);
+      console.log("Error:", err?.response?.data?.message);
     }
   };
 };
