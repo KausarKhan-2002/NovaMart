@@ -65,6 +65,11 @@ const userSchema = new mongoose.Schema(
         if (!isValidDOB) throw new Error("Invalid date of birth");
       },
     },
+    role: {
+      type: String,
+      trim: true,
+      enum: ["GENERAL", "ADMIN"],
+    },
   },
   { timestamps: true }
 );

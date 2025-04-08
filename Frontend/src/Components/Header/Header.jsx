@@ -28,7 +28,7 @@ function Header() {
         />
       )}
 
-      <header className="fixed top-0 left-0 w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-md px-4 sm:px-8 py-3 z-50 flex items-center justify-between transition-colors duration-300">
+      <header className="fixed top-0 left-0 w-full h-16 bg-white text-gray-900 dark:text-white shadow-md px-4 sm:px-8 py-3 z-50 flex items-center justify-between transition-colors duration-300">
         {/* Logo */}
         <div className="text-xl sm:text-2xl font-bold text-emerald-500 tracking-wide">
           nova<span className="dark:text-white text-gray-900">Mart</span>

@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { BiShow, BiHide } from "react-icons/bi";
-import { getMaxiAllowedDOB } from "../Helpers/getMaxAllowedDOB";
-import { ImSpinner6 } from "react-icons/im";
 import Spinner from "../../Shared/Spinner";
+import { getMaxiAllowedDOB } from "../../Helpers/getMaxAllowedDOB";
 
 function SignupStep2({
   userInfo,

@@ -6,7 +6,7 @@ export function useCloudinary() {
     console.log("Uploading to Cloudinary...");
 
     if (!selectFile) {
-      console.error("No file selected for upload.");
+      console.warn("No file selected for upload.");
       return;
     }
 

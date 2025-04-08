@@ -15,7 +15,9 @@ const checkEmailValidation = (email) => {
   }
 };
 
-const checkPasswordValidation = (password, confirmPassword) => {
+const checkPasswordValidation = (password, confirmPassword, auth) => {
+  console.log(password, confirmPassword);
+
   if (!password) {
     toast.error("Password is required");
     return true;
@@ -28,7 +30,11 @@ const checkPasswordValidation = (password, confirmPassword) => {
     return true;
   }
 
-  if (confirmPassword) {
+  if (auth === "signup") {
+    if (!confirmPassword) {
+      toast.error("Confirm password is required.");
+      return true;
+    }
     if (password !== confirmPassword) {
       toast.error("Passwords do not match. Please try again.");
       return true;
@@ -55,7 +61,8 @@ const checkUsernameValidation = (username) => {
 
 export const useValidator = () => {
   return (userInfo, check) => {
-    const { username, email, password, confirmPassword } = userInfo;
+    const { username, email, password, confirmPassword, gender, DOB } =
+      userInfo;
 
     if (check === "login") {
       if (checkEmailValidation(email)) return true;
@@ -65,7 +72,18 @@ export const useValidator = () => {
     if (check === "all") {
       if (checkUsernameValidation(username)) return true;
 
-      if (checkPasswordValidation(password, confirmPassword)) return true;
+      if (checkPasswordValidation(password, confirmPassword, "signup"))
+        return true;
+
+      if (!gender) {
+        toast.error("Gender is required.");
+        return true;
+      }
+
+      if (!DOB) {
+        toast.error("Date of birth is required.");
+        return true;
+      }
     }
 
     if (check === "next") {

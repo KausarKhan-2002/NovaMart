@@ -29,6 +29,7 @@ function Auth() {
     DOB: "",
     cloudinaryImage: "",
   });
+  // console.log(userInfo);
 
   const cloudinary = useCloudinary();
   const validate = useValidator();
@@ -49,10 +50,13 @@ function Auth() {
       if (validate(userInfo, "login")) return;
     }
 
-    // Upload to Cloudinary
-    if (isSignup) {
-      cloudinary(selectFile, setCloudinaryImg, setTempUrl);
-    }
+    const cloud = () => {
+      // Upload to Cloudinary
+      if (isSignup) {
+        cloudinary(selectFile, setCloudinaryImg, setTempUrl);
+      }
+    };
+    cloud();
 
     auth(isSignup, setIsSignup, userInfo, setUserInfo, setLoading);
   };

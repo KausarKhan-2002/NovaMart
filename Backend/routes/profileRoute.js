@@ -4,22 +4,23 @@ const { isAuthorised } = require("../middlewares/isAuthorised");
 
 const route = express.Router();
 
+
 route.get("/", isAuthorised, (req, res) => {
   try {
-    // 1. Not authorised if req.user does not exist
+    // 1️⃣ Check if user exists on request
     if (!req.user) {
-      return res
-        .status(400)
-        .json({ success: false, message: "You are not authorised" });
+      const err = new Error("You are not authorised");
+      err.statusCode = 401;
+      throw err;
     }
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "user retrieved successfully",
-        user: req.user,
-      });
+    // 2️⃣ Respond with user data
+    res.status(200).json({
+      success: true,
+      message: "User retrieved successfully",
+      user: req.user,
+    });
+
   } catch (err) {
     catchError(err, res);
   }

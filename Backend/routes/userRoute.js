@@ -45,6 +45,7 @@ route.post("/signup", async (req, res) => {
       password: hashedPassword,
       gender,
       DOB,
+      role: "GENERAL",
       cloudinaryImage: cloudinaryImage || "",
     });
 
@@ -80,7 +81,9 @@ route.post("/login", async (req, res) => {
     // 3️⃣ Find user by email
     const foundUser = await User.findOne({ email });
     if (!foundUser) {
-      const err = new Error("No account found with this email. Please sign up first.");
+      const err = new Error(
+        "No account found with this email. Please sign up first."
+      );
       err.statusCode = 401;
       throw err;
     }
@@ -109,7 +112,6 @@ route.post("/login", async (req, res) => {
     catchError(err, res);
   }
 });
-
 
 route.post("/logout", isAuthorised, async (req, res) => {
   try {

@@ -24,11 +24,11 @@ export const useAuth = () => {
       }
 
       toast.success(res.data.message || "Action successful");
-      console.log(res.data.user);
+      // console.log(res.data.user);
 
       setLoading(false);
       setIsSignup(false);
-      dispatch(getUserProfile(res.data.user))
+      if (!isSignup) dispatch(getUserProfile(res.data.user))
 
       // reset
       setUserInfo({
@@ -41,12 +41,13 @@ export const useAuth = () => {
         cloudinaryImage: "",
       });
       
-      navigate("/");
+      if (!isSignup) navigate("/");
     } catch (err) {
       console.error("Auth error:", err);
       const message =
         err?.response?.data?.message || "Server error. Please try again.";
       toast.error(message);
+      setLoading(false)
     }
   };
 };
