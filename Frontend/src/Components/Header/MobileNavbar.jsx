@@ -2,9 +2,10 @@ import React from "react";
 import { BsMoon, BsSun } from "react-icons/bs";
 import { FaRegUser } from "react-icons/fa";
 import { HiOutlineShoppingCart } from "react-icons/hi2";
+import { IoHomeOutline } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLogout } from "../../Hooks/useLogout";
 import { DEFAULT_PROFILE } from "../../Utils/constants";
 
@@ -15,14 +16,16 @@ function MobileNavbar({ sidebarOpen, setSidebarOpen, darkMode, setDarkMode }) {
 
   const handleLogInOut = async () => {
     if (!user) {
-      setSidebarOpen(false)
+      setSidebarOpen(false);
       navigate("/auth");
       return;
     }
-    setSidebarOpen(false)
+    setSidebarOpen(false);
 
     logout();
   };
+
+  const imgUrl = user?.cloudinaryImage || DEFAULT_PROFILE;
 
   return (
     <div
@@ -43,15 +46,16 @@ function MobileNavbar({ sidebarOpen, setSidebarOpen, darkMode, setDarkMode }) {
       {/* Sidebar Content */}
       <div className="flex flex-col p-5 space-y-5 pb-20">
         <img
-          src={
-            user
-              ? user.cloudinaryImage
-                ? user.cloudinaryImage
-                : DEFAULT_PROFILE
-              : DEFAULT_PROFILE
-          }
+          src={imgUrl}
           className="mx-auto w-25 h-25 border border-slate-600 rounded-full"
         />
+
+        <button className="flex items-center space-x-2 hover:text-emerald-500 transition-colors">
+          <IoHomeOutline className="text-xl"  />
+          <Link onClick={() => setSidebarOpen(false)} to="/" className="text-sm">
+            Home
+          </Link>
+        </button>
 
         <button
           onClick={() => setDarkMode(!darkMode)}
@@ -63,18 +67,26 @@ function MobileNavbar({ sidebarOpen, setSidebarOpen, darkMode, setDarkMode }) {
           </span>
         </button>
 
-        <button className="flex items-center space-x-2 hover:text-emerald-500 transition-colors">
-          <FaRegUser className="text-xl" />
-          <span className="text-sm">Profile</span>
-        </button>
+        {user && (
+          <button className="flex items-center space-x-2 hover:text-emerald-500 transition-colors">
+            <FaRegUser className="text-xl" />
+            <Link to="/profile" className="text-sm">
+              Profile
+            </Link>
+          </button>
+        )}
 
-        <button className="relative flex items-center space-x-2 hover:text-emerald-500 transition-colors">
+        <Link
+          onClick={() => setSidebarOpen(false)}
+          to={"/cart"}
+          className="relative flex items-center space-x-2 hover:text-emerald-500 transition-colors"
+        >
           <HiOutlineShoppingCart className="text-2xl" />
           <span className="text-sm">Cart</span>
           <span className="absolute -top-1 left-16 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
             0
           </span>
-        </button>
+        </Link>
       </div>
 
       {/* Login button fixed at bottom */}

@@ -1,17 +1,19 @@
-import axios from "axios";
 import React, { useState } from "react";
 import { BsMoon, BsSun } from "react-icons/bs";
 import { FaRegUser } from "react-icons/fa";
 import { FiMenu } from "react-icons/fi";
 import { HiOutlineShoppingCart } from "react-icons/hi2";
 import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLogout } from "../../Hooks/useLogout";
 import { DEFAULT_PROFILE } from "../../Utils/constants";
 
 function DesktopNavbar({ sidebarOpen, setSidebarOpen, darkMode, setDarkMode }) {
   const [showDropdown, setShowDropdown] = useState(false);
+
   const user = useSelector((store) => store.user);
+  const location = useLocation();
+  const path = location.pathname;
 
   const navigate = useNavigate();
   const logout = useLogout();
@@ -24,16 +26,12 @@ function DesktopNavbar({ sidebarOpen, setSidebarOpen, darkMode, setDarkMode }) {
     logout();
   };
 
-  const imgUrl = user
-    ? user.cloudinaryImage
-      ? user.cloudinaryImage
-      : DEFAULT_PROFILE
-    : DEFAULT_PROFILE;
+  const imgUrl = user?.cloudinaryImage || DEFAULT_PROFILE;
 
   return (
     <div className="flex items-center space-x-4">
       {/* Desktop Nav */}
-      <nav className="md:flex items-center space-x-4 lg:space-x-7">
+      <nav className="hidden md:flex items-center space-x-4 lg:space-x-7">
         <div>
           <img
             onClick={() => setShowDropdown((prev) => !prev)}
@@ -46,10 +44,40 @@ function DesktopNavbar({ sidebarOpen, setSidebarOpen, darkMode, setDarkMode }) {
               showDropdown ? "scale-y-100" : "scale-y-0"
             }`}
           >
-            <div className="flex flex-col items-center p-4 pt-5">
-              <Link className="w-full text-center border border-slate-100 rounded-lg hover:text-emerald-600 transition py-2 font-medium">
-                Admin panel
+            <div className="flex flex-col items-center py-4 gap-2">
+              <Link
+                onClick={() => path !== "/" && setShowDropdown(false)}
+                to={"/"}
+                className={`w-full text-center rounded-lg ${
+                  path === "/" && "text-emerald-600"
+                } hover:text-emerald-600 transition font-medium p-1`}
+              >
+                Home
               </Link>
+              {user && (
+                <Link
+                  onClick={() =>
+                    path !== "/admin-panel" && setShowDropdown(false)
+                  }
+                  to={"/admin-panel"}
+                  className={`w-full text-center rounded-lg ${
+                    path === "/admin-panel" && "text-emerald-600"
+                  } hover:text-emerald-600 transition font-medium p-1`}
+                >
+                  Admin panel
+                </Link>
+              )}
+              {user && (
+                <Link
+                  onClick={() => path !== "/profile" && setShowDropdown(false)}
+                  to={"/profile"}
+                  className={`w-full text-center rounded-lg ${
+                    path === "/profile" && "text-emerald-600"
+                  } hover:text-emerald-600 transition font-medium p-1`}
+                >
+                  Profile
+                </Link>
+              )}
 
               {/* Triangle Tail (optional) */}
               {/* <div className="absolute -top-2 left-4 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white"></div> */}
