@@ -16,8 +16,6 @@ function App() {
     profile();
   }, []);
 
-  // if (!user) return;
-
   return (
     <div className="bg-slate-100">
       <Toaster />

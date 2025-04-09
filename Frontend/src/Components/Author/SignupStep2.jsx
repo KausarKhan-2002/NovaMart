@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BiShow, BiHide } from "react-icons/bi";
-import Spinner from "../../Shared/Spinner";
+import Spinner from "../../Helpers/Spinner";
 import { getMaxiAllowedDOB } from "../../Helpers/getMaxAllowedDOB";
 
 function SignupStep2({

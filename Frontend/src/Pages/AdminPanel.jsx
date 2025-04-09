@@ -13,8 +13,6 @@ function AdminPanel() {
   const navigate = useNavigate()
   const location = useLocation()
   const path = location.pathname
-  console.log(path);
-  
 
   useEffect(() => {
     navigate("all-users")

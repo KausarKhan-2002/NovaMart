@@ -1,25 +1,9 @@
 import React from "react";
 import { FaEdit } from "react-icons/fa";
 
-const users = [
-  {
-    id: 1,
-    name: "Amit Sharma",
-    email: "amit@example.com",
-    role: "Admin",
-    createdAt: "2024-01-20",
-  },
-  {
-    id: 2,
-    name: "Priya Mehta",
-    email: "priya@example.com",
-    role: "User",
-    createdAt: "2024-03-10",
-  },
-  // Add more users as needed
-];
+const AllUsersTable = ({ users, setCurrUser, setShowRoleModel }) => {
+  if (!users) return;
 
-const AllUsersTable = () => {
   return (
     <div className="overflow-x-auto w-full bg-white shadow-md rounded-xl p-4">
       <h2 className="text-xl font-semibold mb-4 text-gray-800">All Users</h2>
@@ -35,13 +19,13 @@ const AllUsersTable = () => {
           </tr>
         </thead>
         <tbody>
-          {users.map((user, idx) => (
+          {users.map((user, ind) => (
             <tr
-              key={user.id}
+              key={user._id}
               className="border-b hover:bg-slate-50 transition duration-200"
             >
-              <td className="py-3 px-4">{idx + 1}</td>
-              <td className="py-3 px-4 font-medium">{user.name}</td>
+              <td className="py-3 px-4">{ind + 1}</td>
+              <td className="py-3 px-4 font-medium">{user.username}</td>
               <td className="py-3 px-4">{user.email}</td>
               <td className="py-3 px-4">
                 <span
@@ -56,7 +40,12 @@ const AllUsersTable = () => {
               </td>
               <td className="py-3 px-4">{user.createdAt}</td>
               <td className="py-3 px-4">
-                <button className="text-blue-500 hover:text-blue-700">
+                <button
+                  onClick={() => {
+                    setCurrUser(user);
+                  }}
+                  className="text-blue-500 hover:text-blue-700"
+                >
                   <FaEdit />
                 </button>
               </td>
