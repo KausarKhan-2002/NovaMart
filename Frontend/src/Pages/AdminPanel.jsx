@@ -19,7 +19,7 @@ function AdminPanel() {
   }, [])
 
   return (
-    <div className="flex flex-col md:flex-row h-screen">
+    <div className="flex flex-col md:flex-row min-h-[91vh]">
       {/* Sidebar */}
       <aside className="w-full md:w-[250px] bg-white shadow-md md:shadow-xl">
         <div className="flex flex-col items-center py-6 border-b border-slate-200">

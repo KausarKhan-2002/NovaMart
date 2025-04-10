@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import AllUsersTable from "../Components/Admin/AllUsersTable";
 import RoleModel from "../Components/Admin/RoleModel";
 import { useAllUsers } from "../Hooks/useAllUsers";
+import TableShimmer from "../Components/ShimmerUI/TableShimmer";
 
 function AllUsers() {
   const [users, setUsers] = useState([]);
@@ -14,6 +15,8 @@ function AllUsers() {
   useEffect(() => {
     allUsers(setUsers);
   }, []);
+
+  if (users.length === 0) return <TableShimmer />
 
   return (
     <div>
