@@ -5,7 +5,7 @@ function PreviewImage({ showPreviewImg, setShowpreviewimg }) {
     <div
     onClick={(e) => e.target.id === "previewImg" && setShowpreviewimg(false)}
       id="previewImg"
-      className="fixed top-0 left-0 w-full h-full bg-black/60 flex items-center justify-center"
+      className="fixed top-0 left-0 w-full h-full bg-black/60 flex items-center justify-center z-10"
     >
       <div className="bg-white w-[70%] h-[75%] px-4">
         <button className="text-4xl flex justify-end w-full">

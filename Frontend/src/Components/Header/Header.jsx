@@ -1,12 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import MobileNavbar from "./MobileNavbar";
 import DesktopNavbar from "./DesktopNavbar";
+import { useSelector } from "react-redux";
+import { dark, light } from "../../Utils/themes";
+import { placeholderColor } from "../../Helpers/placeholderColor";
 
 function Header() {
   const [query, setQuery] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
+  const [toggleTheme, setToggleTheme] = useState({
+    bgColor: light.bgColor,
+    textColor: light.textColor,
+  });
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const theme = useSelector((store) => store.toggler.theme);
+
+  useEffect(() => {
+    setToggleTheme(theme === "l" ? light : dark);
+  }, [theme]);
+
+  const bgColor = toggleTheme.bgColor;
+  const textColor = toggleTheme.textColor;
 
   const handleSearch = () => {
     if (query.trim() !== "") {
@@ -28,22 +42,26 @@ function Header() {
         />
       )}
 
-      <header className="fixed top-0 left-0 w-full h-16 bg-white text-gray-900 dark:text-white shadow-md px-4 sm:px-8 py-3 z-50 flex items-center justify-between transition-colors duration-300">
+      <header
+        className={`fixed top-0 left-0 w-full h-16 ${`${bgColor.color1} ${textColor.color1}`}   shadow-md px-4 sm:px-8 py-3 z-50 flex items-center justify-between transition-colors duration-300`}
+      >
         {/* Logo */}
         <div className="text-xl sm:text-2xl font-bold text-emerald-500 tracking-wide">
-          nova<span className="dark:text-white text-gray-900">Mart</span>
+          nova<span className={`${textColor?.color1}`}>Mart</span>
         </div>
 
         {/* Search Bar */}
         <div className="flex-grow mx-4 max-w-md">
-          <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-full px-3 py-1 w-full">
+          <div
+            className={`flex items-center ${bgColor.color2} rounded-full px-3 py-1 w-full`}
+          >
             <input
               type="text"
               placeholder="Search products..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="bg-transparent outline-none px-3 py-1 w-full text-sm dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+              className={`bg-transparent outline-none ${textColor.color1} placeholder-gray-400 px-3 py-1 w-full text-sm`}
             />
             <button
               onClick={handleSearch}
@@ -58,8 +76,9 @@ function Header() {
         <DesktopNavbar
           sidebarOpen={sidebarOpen}
           setSidebarOpen={setSidebarOpen}
-          darkMode={darkMode}
-          setDarkMode={setDarkMode}
+          bgColor={bgColor}
+          textColor={textColor}
+          theme={theme}
         />
       </header>
 
@@ -67,8 +86,8 @@ function Header() {
       <MobileNavbar
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
-        darkMode={darkMode}
-        setDarkMode={setDarkMode}
+        darkMode={toggleTheme}
+        setDarkMode={setToggleTheme}
       />
     </>
   );
