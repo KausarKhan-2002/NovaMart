@@ -6,7 +6,7 @@ import AuthShimmer from "../Components/ShimmerUI/AuthShimmer";
 import ErrorShimmer from "../Components/ShimmerUI/ErrorShimmer";
 import CartShimmer from "../Components/ShimmerUI/CartShimmer";
 
-const Home = lazy(() => import("./home"));
+const Home = lazy(() => import("./Home"));
 const Auth = lazy(() => import("./Auth"));
 const Profile = lazy(() => import("./Profile"));
 const UpdateProfile = lazy(() => import("./UpdateProfile"));
