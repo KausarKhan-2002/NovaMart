@@ -1,5 +1,6 @@
 // src/Hooks/useCloudinary.js
 import axios from "axios";
+import toast from "react-hot-toast";
 
 export const useCloudinary = () => {
   const uploadImage = async (selectFile, setCloudinaryImg, setTempUrl) => {
@@ -72,6 +73,7 @@ export const useMultipleCloudinaries = () => {
       console.error(
         err.response?.data || err.message
       );
+      toast.error("Internal cloudinary error, please select your product images again!")
       setLoader(false)
     }
   };

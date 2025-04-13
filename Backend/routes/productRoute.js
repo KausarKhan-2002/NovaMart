@@ -3,7 +3,7 @@ const Product = require("../models/productModel"); // Assuming your product sche
 const { catchError } = require("../helper/catchError");
 const { isAuthorised } = require("../middlewares/isAuthorised");
 const router = express.Router();
-
+const cloudinary = require("../config/cloudinary")
 
 router.post("/upload-product", isAuthorised, async (req, res) => {
   // Extract all product details from client request body
@@ -24,6 +24,8 @@ router.post("/upload-product", isAuthorised, async (req, res) => {
   } = req.body;
 
   try {
+    console.log(req.body);
+
     // Optional: Validate required fields
     if (!name || !price || !category || !images?.length) {
       throw new Error(
@@ -87,6 +89,34 @@ router.get("/view", isAuthorised, async (req, res) => {
     });
   } catch (err) {
     catchError(err, res); // Assuming catchError is a custom error handler
+  }
+});
+
+router.delete("/:productId/image/:publicId", isAuthorised, async (req, res) => {
+  try {
+    const { productId, publicId } = req.params;
+
+    // 1. common validation
+    if (!productId || !publicId) {
+      throw new Error("Invalid credential please try again!");
+    }
+    // 2. Delete from Cloudinary
+    await cloudinary.uploader.destroy(publicId);
+
+    // 3. Remove image from DB
+    const updatedProduct = await Product.findByIdAndUpdate(
+      productId,
+      { $pull: { images: { public_id: publicId } } },
+      { new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Image deleted successfully",
+      product: updatedProduct,
+    });
+  } catch (err) {
+    catchError(err, res);
   }
 });
 

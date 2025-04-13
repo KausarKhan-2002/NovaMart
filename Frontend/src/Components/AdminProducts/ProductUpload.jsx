@@ -9,85 +9,93 @@ import AddImagesAndView from "./AddImagesAndView";
 import { useMultipleCloudinaries } from "../../Hooks/useCloudinary";
 import { useUploadProduct } from "../../Hooks/useUploadProduct";
 import Spinner from "../../Helpers/Spinner";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { BASE_URL } from "../../Utils/constants";
+import { deleteImage } from "../../Store/productSlice";
 
-function ProductUpload({ setShowForm }) {
+function ProductUpload({ setShowForm, productEditId }) {
+  const products = useSelector((store) => store.products);
+  const product = products.find((p) => p._id === productEditId);
+  console.log(product);
+
   const [productInfo, setProductInfo] = useState({
-    name: "",
-    description: "",
-    price: "",
-    brand: "",
-    category: "airpods",
-    stock: 0,
-    images: [],
-    reviews: [],
-    selling: "",
-    discount: 0,
+    name: product?.name || "",
+    description: product?.description || "",
+    price: product?.price || "",
+    brand: product?.brand || "",
+    category: product?.category || "airpods",
+    stock: product?.stock || 0,
+    images: product?.images || [],
+    reviews: product?.reviews || [],
+    selling: product?.selling || "",
+    discount: product?.discount || 0,
     shippingDetails: {
-      weight: "",
-      dimensions: "",
-      shippingFrom: "",
-      shippingCost: "",
+      weight: product?.shippingDetails?.weight || "",
+      dimensions: product?.shippingDetails?.dimensions || "",
+      shippingFrom: product?.shippingDetails?.shippingFrom || "",
+      shippingCost: product?.shippingDetails?.shippingCost || "",
     },
   });
-  const [descriptionLimit, setDescriptionLimit] = useState(0);
-  const [showPreviewImg, setShowpreviewimg] = useState(false);
+  const [descriptionLimit, setDescriptionLimit] = useState(
+    product?.description?.length || 0
+  );
+  const [showPreviewImg, setShowpreviewImg] = useState(false);
   const [imgFiles, setImgFiles] = useState([]);
   const [sellingPrice, setSellingPrice] = useState(productInfo.price);
   const [loader, setLoader] = useState(false);
+  const [spin, setSpin] = useState(false);
   const cloudinaries = useMultipleCloudinaries();
   const uploadProduct = useUploadProduct();
+  const dispatch = useDispatch();
   const limit = 400;
-  // console.log(productInfo);
+  console.log(productInfo);
 
   useEffect(() => {
-    setProductInfo(prev => ({
-      ...prev,
-      selling: sellingPrice
-    }))
-  }, [productInfo.price, productInfo.discount])
-  
-
-  const handleChange = (e) => {
-  const { name, value } = e.target;
-
-  // Handle description limit
-  if (name === "description") {
-    const length = value.length;
-    const count = length <= limit ? length : limit;
-    setDescriptionLimit(count);
-  }
-
-  // Update shippingDetails fields
-  if (name.startsWith("shippingDetails.")) {
-    const field = name.split(".")[1];
     setProductInfo((prev) => ({
       ...prev,
-      shippingDetails: {
-        ...prev.shippingDetails,
-        [field]: value,
-      },
+      selling: sellingPrice,
     }));
-  } else {
+  }, [productInfo.price, productInfo.discount]);
 
-    // Avoid typing over limit
-    if (name === "description" && descriptionLimit >= limit) return
-    
+  const handleChange = (e) => {
+    const { name, value } = e.target;
 
-    // Update the main fields
-    setProductInfo((prev) => {
-      const updated = { ...prev, [name]: value };
+    // Handle description limit
+    if (name === "description") {
+      const length = value.length;
+      const count = length <= limit ? length : limit;
+      setDescriptionLimit(count);
+    }
 
-      // Dynamically calculate and update sellingPrice right here
-      const price = parseFloat(updated.price) || 0;
-      const discount = parseFloat(updated.discount) || 0;
-      const discountAmount = (price * discount) / 100;
-      setSellingPrice(price - discountAmount);
+    // Update shippingDetails fields
+    if (name.startsWith("shippingDetails.")) {
+      const field = name.split(".")[1];
+      setProductInfo((prev) => ({
+        ...prev,
+        shippingDetails: {
+          ...prev.shippingDetails,
+          [field]: value,
+        },
+      }));
+    } else {
+      // Avoid typing over limit
+      if (name === "description" && descriptionLimit >= limit) return;
 
-      return updated;
-    });
-  }
-};
+      // Update the main fields
+      setProductInfo((prev) => {
+        const updated = { ...prev, [name]: value };
 
+        // Dynamically calculate and update sellingPrice right here
+        const price = parseFloat(updated.price) || 0;
+        const discount = parseFloat(updated.discount) || 0;
+        const discountAmount = (price * discount) / 100;
+        setSellingPrice(price - discountAmount);
+
+        return updated;
+      });
+    }
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -103,21 +111,56 @@ function ProductUpload({ setShowForm }) {
     e.preventDefault();
 
     const imgUrls = await cloudinaries(imgFiles, setLoader);
-    console.log(imgUrls);
+    console.log("urls", imgUrls);
+    if (!imgUrls) return;
 
+    // locally Update with cloudinary image urls
     const finalProductInfo = {
       ...productInfo,
       images: imgUrls,
     };
+    console.log("finalProduct:", finalProductInfo);
 
-    uploadProduct(finalProductInfo, setLoader, setProductInfo);
+    uploadProduct(finalProductInfo, setLoader);
   };
 
-  const handleImageDelete = (delInd) => {
-    const filterImgByDelete = productInfo.images.filter(
-      (img, ind) => ind != delInd
-    );
-    setProductInfo((prev) => ({ ...prev, images: filterImgByDelete }));
+  const handleImageDelete = (delInd, img) => {
+
+    const filterBlobs = productInfo.images.filter((img, ind) => ind != delInd);
+
+    const publicId = img?.public_id;
+
+    const deleteImgFromStore = () => {
+      if (publicId) {
+        dispatch(deleteImage({productId: product._id, publicId}));
+      } else {
+        const filterFiles = imgFiles.filter((file, ind) => ind != delInd);
+        setProductInfo((prev) => ({ ...prev, images: filterBlobs }));
+        setImgFiles(filterFiles);
+      }
+    };
+
+    const deleteImageFromDB = async () => {
+      setSpin(true);
+
+      try {
+        const res = await axios.delete(
+          BASE_URL + `/product/${product._id}/image/${publicId}`,
+          { withCredentials: true }
+        );
+        console.log(res);
+
+        deleteImgFromStore();
+      } catch (err) {
+        console.log(err.message);
+      } finally {
+        setSpin(false);
+      }
+    };
+
+    !publicId && deleteImgFromStore();
+
+    publicId && deleteImageFromDB();
   };
 
   return (
@@ -128,7 +171,7 @@ function ProductUpload({ setShowForm }) {
     >
       <div className="w-full h-full border overflow-auto max-w-4xl bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-lg space-y-6">
         <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-white">
-          Upload New Product
+          {product ? "Update Your Product" : "Upload New Product"}
         </h2>
 
         {/* Close button to hide form */}
@@ -146,7 +189,12 @@ function ProductUpload({ setShowForm }) {
         <ProductCategory setProductInfo={setProductInfo} />
 
         {/* Pricing & Stock */}
-        <PricingStock productInfo={productInfo} handleChange={handleChange} sellingPrice={sellingPrice} setSellingPrice={setSellingPrice} />
+        <PricingStock
+          productInfo={productInfo}
+          handleChange={handleChange}
+          sellingPrice={sellingPrice}
+          setSellingPrice={setSellingPrice}
+        />
 
         {/* Description */}
         <ProductDescription
@@ -168,7 +216,9 @@ function ProductUpload({ setShowForm }) {
           handleImageChange={handleImageChange}
           handleImageDelete={handleImageDelete}
           showPreviewImg={showPreviewImg}
-          setShowpreviewimg={setShowpreviewimg}
+          setShowpreviewImg={setShowpreviewImg}
+          spin={spin}
+          product={product}
         />
 
         {/* Submit */}
@@ -178,7 +228,8 @@ function ProductUpload({ setShowForm }) {
             type="submit"
             className="flex gap-2 items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 w-full md:w-fit rounded-xl transition-all cursor-pointer"
           >
-            {loader && <Spinner />} Upload Product
+            {loader && <Spinner />}{" "}
+            {product ? "Update product" : "Upload Product"}
           </button>
         </div>
       </div>

@@ -1,16 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import PreviewImage from "./PreviewImage";
 import { RiUploadCloud2Fill } from "react-icons/ri";
 import { FaRegEye } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
+import Spinner from "../../Helpers/Spinner";
 
 function AddImagesAndView({
   productInfo,
   handleImageChange,
   handleImageDelete,
   showPreviewImg,
-  setShowpreviewimg,
+  setShowpreviewImg,
+  spin,
+  product,
 }) {
+
+  const [imgIndexes, setImgIndexes] = useState([])
+  const images = product?.images
+
+  // If images exist from redux than map otherwise map on productInfo.images
+  const productImages = images || productInfo.images
   
   return (
     <div>
@@ -31,7 +40,7 @@ function AddImagesAndView({
       </div>
 
       <div className="flex flex-wrap gap-3 justify-center bg-slate-100 p-2">
-        {productInfo.images.map((img, ind) => (
+        {productImages.map((img, ind) => (
           <div key={ind} className="relative">
             <img
               src={img.url}
@@ -41,23 +50,29 @@ function AddImagesAndView({
 
             <section>
               <button
-                onClick={() => handleImageDelete(ind)}
+                onClick={() => {
+                  handleImageDelete(ind, img)
+                  setImgIndexes(prev => ([...prev, ind]))
+                }}
                 className="absolute text-sm w-[50%] flex justify-center right-0 bottom-0 bg-white opacity-80 text-red-500 p-1 cursor-pointer"
               >
                 <MdDelete />
               </button>
               <button
-                onClick={() => setShowpreviewimg(img)}
+                onClick={() => setShowpreviewImg(img.url)}
                 className="absolute text-sm w-[50%] flex justify-center left-0 bottom-0 bg-blue-100 opacity-80 text-blue-500 p-1 cursor-pointer"
               >
                 <FaRegEye />
               </button>
             </section>
 
+            {/*  show spin either single or multiple images deletion is under process */}
+            {spin && imgIndexes.includes(ind) && <p className="absolute top-0 text-orange-500 w-full h-full flex justify-center items-center bg-black/20"><Spinner /></p>}
+
             {showPreviewImg && (
               <PreviewImage
                 showPreviewImg={showPreviewImg}
-                setShowpreviewimg={setShowpreviewimg}
+                setShowpreviewImg={setShowpreviewImg}
               />
             )}
           </div>

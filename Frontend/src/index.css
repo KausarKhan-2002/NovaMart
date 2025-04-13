@@ -16,3 +16,42 @@ body {
 html.dark body {
   @apply bg-slate-900 text-white;
 }
+
+
+/* ********* Custom scrollbar ************ */
+.scrollbar-custom {
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #8caaa0 #f1f1f1; /* For Firefox */
+
+  /* For Chrome, Edge, Safari */
+}
+.scrollbar-custom::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+
+/* ********* Hide scrollbar ************ */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;     /* Firefox */
+
+  /* Chrome, Safari, Edge */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

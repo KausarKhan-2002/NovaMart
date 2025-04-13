@@ -21,6 +21,8 @@ app.use(
 );
 app.use(cookieParser());
 
+
+
 const connectionDB = async () => {
   try {
     if (mongoose.connection === 1) {

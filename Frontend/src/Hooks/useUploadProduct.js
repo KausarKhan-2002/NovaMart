@@ -1,9 +1,13 @@
 import axios from "axios";
 import { BASE_URL } from "../Utils/constants";
 import { toast } from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { addProduct } from "../Store/productSlice";
 
 export const useUploadProduct = () => {
-  return async (productInfo, setLoader, setProductInfo) => {
+  const dispatch = useDispatch()
+
+  return async (productInfo, setLoader) => {
     setLoader(true);
 
     // Convert String into Number which are required as a number in schema
@@ -25,7 +29,8 @@ export const useUploadProduct = () => {
         product,
         { withCredentials: true }
       );
-      console.log(res);
+      console.log(res.data.product);
+      dispatch(addProduct(res.data.product))
       toast.success(res.data.message);
       // setProductInfo({
       //   name: "",
@@ -47,7 +52,7 @@ export const useUploadProduct = () => {
       // });
     } catch (err) {
       console.log("Error:", err);
-      toast.error(err.response.data.message);
+      toast.error("error");
     } finally {
       setLoader(false);
     }
