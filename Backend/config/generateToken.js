@@ -6,10 +6,9 @@ const generateToken = (userId, res) => {
   });
 
   res.cookie("jwt", token, {
-    httpOnly: true, // Prevents access via JavaScript
-    secure: process.env.NODE_ENV === "production", // HTTPS only in prod
-    sameSite: "strict", // CSRF protection
-    // maxAge: 2 * 60 * 60 * 1000, // 2 hours in milliseconds
+    httpOnly: true,
+    secure: true, // ✅ Production me HTTPS ke liye true hona chahiye
+    sameSite: "None", // ✅ Cross-origin cookies ke liye None hona chahiye
   });
 };
 

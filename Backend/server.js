@@ -13,12 +13,20 @@ const PORT = process.env.PORT;
 const MONGODB_URI = process.env.MONGODB_URI;
 
 app.use(express.json());
-app.use(
-  cors({
-    credentials: true,
-    origin: "http://localhost:5173",
-  })
-);
+const allowedOrigins = [
+  "http://localhost:5173", // Local development (for now)
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true); // Allow request from allowed origins
+    } else {
+      callback(new Error("Not allowed by CORS")); // Reject other origins
+    }
+  },
+  credentials: true // Allow cookies to be sent along with requests
+}));
 app.use(cookieParser());
 
 
