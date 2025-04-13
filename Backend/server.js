@@ -17,19 +17,13 @@ const allowedOrigins = [
   "http://localhost:5173", // Local development (for now)
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true); // Allow request from allowed origins
-    } else {
-      callback(new Error("Not allowed by CORS")); // Reject other origins
-    }
-  },
-  credentials: true // Allow cookies to be sent along with requests
-}));
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://novamart-client.onrender.com"], // to test locally also
+    credentials: true, // if using cookies
+  })
+);
 app.use(cookieParser());
-
-
 
 const connectionDB = async () => {
   try {
