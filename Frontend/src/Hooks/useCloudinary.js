@@ -36,8 +36,9 @@ export const useCloudinary = () => {
 };
 
 export const useMultipleCloudinaries = () => {
-  return async (files, setImageArr) => {
-    console.log(files);
+  return async (files, setLoader) => {
+    setLoader(true)
+    
     if (!files || files.length === 0) {
       console.warn("No files provided for upload.");
       return;
@@ -71,6 +72,7 @@ export const useMultipleCloudinaries = () => {
       console.error(
         err.response?.data || err.message
       );
+      setLoader(false)
     }
   };
 };

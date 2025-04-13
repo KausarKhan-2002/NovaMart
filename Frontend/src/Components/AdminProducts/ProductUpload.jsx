@@ -8,6 +8,7 @@ import ShippingDetails from "./ShippingDetails";
 import AddImagesAndView from "./AddImagesAndView";
 import { useMultipleCloudinaries } from "../../Hooks/useCloudinary";
 import { useUploadProduct } from "../../Hooks/useUploadProduct";
+import Spinner from "../../Helpers/Spinner";
 
 function ProductUpload({ setShowForm }) {
   const [productInfo, setProductInfo] = useState({
@@ -15,7 +16,7 @@ function ProductUpload({ setShowForm }) {
     description: "",
     price: "",
     brand: "",
-    category: "",
+    category: "airpods",
     stock: 0,
     images: [],
     reviews: [],
@@ -31,47 +32,66 @@ function ProductUpload({ setShowForm }) {
   const [descriptionLimit, setDescriptionLimit] = useState(0);
   const [showPreviewImg, setShowpreviewimg] = useState(false);
   const [imgFiles, setImgFiles] = useState([]);
-  const [cloudinaryImgArr, setCloudinaryImgArr] = useState([]);
+  const [sellingPrice, setSellingPrice] = useState(productInfo.price);
+  const [loader, setLoader] = useState(false);
   const cloudinaries = useMultipleCloudinaries();
-  const uploadProduct = useUploadProduct()
-  const limit = 200;
-  console.log("productInfo:", productInfo);
+  const uploadProduct = useUploadProduct();
+  const limit = 400;
+  // console.log(productInfo);
+
+  useEffect(() => {
+    setProductInfo(prev => ({
+      ...prev,
+      selling: sellingPrice
+    }))
+  }, [productInfo.price, productInfo.discount])
+  
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+  const { name, value } = e.target;
 
-    // Set the limit to 100 characters
-    if (name === "description") {
-      const length = value.length;
-      const count = length <= limit ? length : limit;
-      setDescriptionLimit(count); // Always update based on new value
-    }
+  // Handle description limit
+  if (name === "description") {
+    const length = value.length;
+    const count = length <= limit ? length : limit;
+    setDescriptionLimit(count);
+  }
 
-    // Name starts with shippingDetails update it's category
-    if (name.startsWith("shippingDetails.")) {
-      const field = name.split(".")[1];
-      setProductInfo((prev) => ({
-        ...prev,
-        shippingDetails: {
-          ...prev.shippingDetails,
-          [field]: value,
-        },
-      }));
-    } else {
-      // Decription limit should not be more than 100 characters
-      if (name === "description" && descriptionLimit >= limit) return;
+  // Update shippingDetails fields
+  if (name.startsWith("shippingDetails.")) {
+    const field = name.split(".")[1];
+    setProductInfo((prev) => ({
+      ...prev,
+      shippingDetails: {
+        ...prev.shippingDetails,
+        [field]: value,
+      },
+    }));
+  } else {
 
-      setProductInfo((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
-  };
+    // Avoid typing over limit
+    if (name === "description" && descriptionLimit >= limit) return
+    
+
+    // Update the main fields
+    setProductInfo((prev) => {
+      const updated = { ...prev, [name]: value };
+
+      // Dynamically calculate and update sellingPrice right here
+      const price = parseFloat(updated.price) || 0;
+      const discount = parseFloat(updated.discount) || 0;
+      const discountAmount = (price * discount) / 100;
+      setSellingPrice(price - discountAmount);
+
+      return updated;
+    });
+  }
+};
+
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setImgFiles((prev) => [...prev, file]);
-    // const blobs = files.map((file) => URL.createObjectURL(file));
     const blob = URL.createObjectURL(file);
     setProductInfo((prev) => ({
       ...prev,
@@ -79,30 +99,18 @@ function ProductUpload({ setShowForm }) {
     }));
   };
 
-  // Without cloudinary img urls can't be upload information
-  useEffect(() => {
-    if (cloudinaryImgArr.length) {
-      setProductInfo((prev) => ({
-        ...prev,
-        images: cloudinaryImgArr,
-      }));
-    }
-  }, [cloudinaryImgArr]);
-
-  const handleProductUpload = async(e) => {
+  const handleProductUpload = async (e) => {
     e.preventDefault();
 
-    const imgUrls = await cloudinaries(imgFiles, setCloudinaryImgArr)
+    const imgUrls = await cloudinaries(imgFiles, setLoader);
     console.log(imgUrls);
 
     const finalProductInfo = {
       ...productInfo,
-      images: imgUrls
-    }
+      images: imgUrls,
+    };
 
-    console.log("andr",finalProductInfo);
-    uploadProduct(finalProductInfo)
-
+    uploadProduct(finalProductInfo, setLoader, setProductInfo);
   };
 
   const handleImageDelete = (delInd) => {
@@ -138,7 +146,7 @@ function ProductUpload({ setShowForm }) {
         <ProductCategory setProductInfo={setProductInfo} />
 
         {/* Pricing & Stock */}
-        <PricingStock productInfo={productInfo} handleChange={handleChange} />
+        <PricingStock productInfo={productInfo} handleChange={handleChange} sellingPrice={sellingPrice} setSellingPrice={setSellingPrice} />
 
         {/* Description */}
         <ProductDescription
@@ -168,9 +176,9 @@ function ProductUpload({ setShowForm }) {
           <button
             onClick={handleProductUpload}
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl transition-all"
+            className="flex gap-2 items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 w-full md:w-fit rounded-xl transition-all cursor-pointer"
           >
-            Upload Product
+            {loader && <Spinner />} Upload Product
           </button>
         </div>
       </div>
