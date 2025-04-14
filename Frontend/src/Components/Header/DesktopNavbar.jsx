@@ -34,7 +34,7 @@ function DesktopNavbar({ sidebarOpen, setSidebarOpen, bgColor, textColor, theme}
     <div className={`flex items-center space-x-4`}>
       {/* Desktop Nav */}
       <nav className="hidden md:flex items-center space-x-4 lg:space-x-7">
-        <div className={`flex items-center gap-1 ${bgColor.color2} rounded-full pr-1`}>
+        <div className={`flex items-center gap-1 ${bgColor?.color2} rounded-full pr-1`}>
           <img
             onClick={() => setShowDropdown((prev) => !prev)}
             src={imgUrl}
@@ -65,7 +65,7 @@ function DesktopNavbar({ sidebarOpen, setSidebarOpen, bgColor, textColor, theme}
             >
               Home
             </Link>
-            {user && (
+            {user?.role === "Admin" && (
               <Link
                 onClick={() =>
                   path !== "/admin-panel" && setShowDropdown(false)

@@ -5,6 +5,8 @@ import MyOutlet from "./Pages/MyOutlet";
 import { Toaster } from "react-hot-toast";
 import { useProfile } from "./Hooks/useProfile";
 import { useSelector } from "react-redux";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const user = useSelector((store) => store.user);
@@ -19,6 +21,7 @@ function App() {
   return (
     <div className="bg-slate-100">
       <Toaster />
+      <ToastContainer />
       <Header />
       <MyOutlet />
       {/* <Footer /> */}

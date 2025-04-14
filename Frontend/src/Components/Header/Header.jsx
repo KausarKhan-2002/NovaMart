@@ -37,13 +37,13 @@ function Header() {
       {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/60 bg-opacity-50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/60 bg-opacity-50 z-50 md:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       <header
-        className={`fixed top-0 left-0 w-full h-16 ${`${bgColor.color1} ${textColor.color1}`}   shadow-md px-4 sm:px-8 py-3 z-50 flex items-center justify-between transition-colors duration-300`}
+        className={`fixed top-0 left-0 w-full h-16 ${`${bgColor?.color1} ${textColor?.color1}`} shadow-md px-4 sm:px-8 py-3 z-40 flex items-center justify-between transition-colors duration-300`}
       >
         {/* Logo */}
         <div className="text-xl sm:text-2xl font-bold text-emerald-500 tracking-wide">
@@ -53,7 +53,7 @@ function Header() {
         {/* Search Bar */}
         <div className="flex-grow mx-4 max-w-md">
           <div
-            className={`flex items-center ${bgColor.color2} rounded-full px-3 py-1 w-full`}
+            className={`flex items-center ${bgColor?.color2} rounded-full px-3 py-1 w-full`}
           >
             <input
               type="text"
@@ -61,7 +61,7 @@ function Header() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}
-              className={`bg-transparent outline-none ${textColor.color1} placeholder-gray-400 px-3 py-1 w-full text-sm`}
+              className={`bg-transparent outline-none ${textColor?.color1} placeholder-gray-400 px-3 py-1 w-full text-sm`}
             />
             <button
               onClick={handleSearch}
@@ -86,8 +86,9 @@ function Header() {
       <MobileNavbar
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
-        darkMode={toggleTheme}
-        setDarkMode={setToggleTheme}
+        bgColor={bgColor}
+        textColor={textColor}
+        theme={theme}
       />
     </>
   );

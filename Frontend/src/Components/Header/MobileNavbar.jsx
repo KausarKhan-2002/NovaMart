@@ -4,15 +4,26 @@ import { FaRegUser } from "react-icons/fa";
 import { HiOutlineShoppingCart } from "react-icons/hi2";
 import { IoHomeOutline } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
-import { useSelector } from "react-redux";
+import { MdAdminPanelSettings } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { useLogout } from "../../Hooks/useLogout";
 import { DEFAULT_PROFILE } from "../../Utils/constants";
+// import toast from "react-hot-toast";
+import { toast } from "react-toastify";
+import { themeSwitcher } from "../../Store/toggleSlice";
 
-function MobileNavbar({ sidebarOpen, setSidebarOpen, darkMode, setDarkMode }) {
+function MobileNavbar({
+  sidebarOpen,
+  setSidebarOpen,
+  bgColor,
+  textColor,
+  theme,
+}) {
   const user = useSelector((store) => store.user);
   const navigate = useNavigate();
   const logout = useLogout();
+  const dispatch = useDispatch();
 
   const handleLogInOut = async () => {
     if (!user) {
@@ -29,9 +40,9 @@ function MobileNavbar({ sidebarOpen, setSidebarOpen, darkMode, setDarkMode }) {
 
   return (
     <div
-      className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-900 shadow-lg z-50 transform transition-transform duration-300 md:hidden ${
+      className={`fixed top-0 right-0 h-full w-66 bg-white shadow-lg z-50 transform transition-transform duration-300 md:hidden ${
         sidebarOpen ? "translate-x-0" : "translate-x-full"
-      }`}
+      } z-999`}
     >
       {/* Close Icon */}
       <div className="flex justify-end p-4">
@@ -51,29 +62,38 @@ function MobileNavbar({ sidebarOpen, setSidebarOpen, darkMode, setDarkMode }) {
         />
 
         <button className="flex items-center space-x-2 hover:text-emerald-500 transition-colors">
-          <IoHomeOutline className="text-xl"  />
-          <Link onClick={() => setSidebarOpen(false)} to="/" className="text-sm">
+          <IoHomeOutline className="text-xl" />
+          <Link
+            onClick={() => setSidebarOpen(false)}
+            to="/"
+            className="text-sm"
+          >
             Home
           </Link>
         </button>
 
         <button
-          onClick={() => setDarkMode(!darkMode)}
+          onClick={() => {
+            dispatch(themeSwitcher(theme === "l" ? "d" : "l"));
+            toast.warn("Themes feature is under process...");
+          }}
           className="text-xl flex items-center space-x-2 hover:text-emerald-500 transition-colors"
         >
-          {darkMode ? <BsSun /> : <BsMoon />}
+          {theme === "d" ? <BsSun /> : <BsMoon />}
           <span className="text-sm">
-            {darkMode ? "Light Mode" : "Dark Mode"}
+            {theme === "d" ? "Light Mode" : "Dark Mode"}
           </span>
         </button>
 
-        {user && (
-          <button className="flex items-center space-x-2 hover:text-emerald-500 transition-colors">
-            <FaRegUser className="text-xl" />
-            <Link to="/profile" className="text-sm">
-              Profile
-            </Link>
-          </button>
+        {user?.role === "Admin" && (
+          <Link
+            to="/admin-panel"
+            onClick={() => setSidebarOpen(false)}
+            className="flex items-center space-x-2 hover:text-emerald-500 transition-colors"
+          >
+            <MdAdminPanelSettings className="text-xl" />
+            <span className="text-sm">Admin Panel</span>
+          </Link>
         )}
 
         <Link
