@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import AuthShimmer from "../Components/ShimmerUI/AuthShimmer";
 import ErrorShimmer from "../Components/ShimmerUI/ErrorShimmer";
 import CartShimmer from "../Components/ShimmerUI/CartShimmer";
+import AdminProtector from "../Components/Protection/AdminProtector";
 
 const Home = lazy(() => import("./Home"));
 const Auth = lazy(() => import("./Auth"));
@@ -18,10 +19,12 @@ const Cart = lazy(() => import("./Cart"));
 
 function MyOutlet() {
   const user = useSelector((store) => store.user);
+  // const products = useSelector(store => store.products)
 
   return (
     <div className="pt-15">
       <Routes>
+        {/* ********** Public routes ********** */}
         <Route
           path="/"
           element={
@@ -40,9 +43,6 @@ function MyOutlet() {
             </Suspense>
           }
         />
-        {user && <Route path="/profile" element={<Profile />} />}
-        {user && <Route path="/profile/update" element={<UpdateProfile />} />}
-
         <Route
           path="/cart"
           element={
@@ -52,30 +52,41 @@ function MyOutlet() {
           }
         />
 
+        {/* ********** User routes ********** */}
+        {user && <Route path="/profile" element={<Profile />} />}
+        {user && <Route path="/profile/update" element={<UpdateProfile />} />}
+
+        {/* ********** Admin routes ********** */}
         {/* Nested Routes for Admin Panel */}
         {user && (
-          <Route path="/admin-panel" element={<AdminPanel />}>
+          <Route element={<AdminProtector />}>
             <Route
-              path="all-users"
-              element={
-                <Suspense fallback={<TableShimmer />}>
-                  <AllUsers />
-                </Suspense>
-              }
-            />
-            <Route
-              path="all-products"
-              element={
-                <Suspense
-                  fallback={<div className="text-center p-4">Loading...</div>}
-                >
-                  <AllProducts />
-                </Suspense>
-              }
-            />
+              path="/admin-panel"
+              element={user?.role === "Admin" ? <AdminPanel /> : <ErrorPage />}
+            >
+              <Route
+                path="all-users"
+                element={
+                  <Suspense fallback={<TableShimmer />}>
+                    <AllUsers />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="all-products"
+                element={
+                  <Suspense
+                    fallback={<div className="text-center p-4">Loading...</div>}
+                  >
+                    <AllProducts />
+                  </Suspense>
+                }
+              />
+            </Route>
           </Route>
         )}
 
+        {/* ********** Unauthorised or Unimplemented routes ********** */}
         <Route
           path="*"
           element={
