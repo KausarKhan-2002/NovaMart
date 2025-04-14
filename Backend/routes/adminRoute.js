@@ -17,7 +17,7 @@ route.patch("/role", isAuthorised, async (req, res) => {
     }
 
     // 2. If role is not as expected
-    if (!["Admin", "General"].includes(role)) {
+    if (!["Admin", "User", "Seller", "Moderator"].includes(role)) {
       throw new Error("Invalid role credential");
     }
 

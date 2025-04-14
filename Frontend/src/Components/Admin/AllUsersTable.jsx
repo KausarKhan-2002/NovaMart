@@ -1,7 +1,7 @@
 import React from "react";
 import { FaEdit } from "react-icons/fa";
 
-const AllUsersTable = ({ users, setCurrUser, setShowRoleModel }) => {
+const AllUsersTable = ({ users, setCurrUser }) => {
   if (!users) return;
 
   return (
@@ -29,10 +29,14 @@ const AllUsersTable = ({ users, setCurrUser, setShowRoleModel }) => {
               <td className="py-3 px-4">{user.email}</td>
               <td className="py-3 px-4">
                 <span
-                  className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                  className={`px-2 py-1 rounded-full text-xs font-semibold text-center min-w-[65px] inline-block ${
                     user.role === "Admin"
+                      ? "bg-red-100 text-red-500"
+                      : user.role === "User"
                       ? "bg-emerald-100 text-emerald-700"
-                      : "bg-indigo-100 text-indigo-700"
+                      : user.role === "Seller"
+                      ? "bg-indigo-100 text-indigo-700"
+                      : "bg-purple-100 text-purple-500"
                   }`}
                 >
                   {user.role}

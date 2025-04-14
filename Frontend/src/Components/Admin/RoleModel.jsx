@@ -28,6 +28,7 @@ function RoleModel({ currUser, setusers, setCurrUser }) {
       toast.success(res.data.message);
     } catch (err) {
       console.log("Error:", err.message);
+      toast.error("No role is updated please try again!");
     } finally {
       setShowSpinner(false);
     }
@@ -40,10 +41,17 @@ function RoleModel({ currUser, setusers, setCurrUser }) {
   };
 
   return (
-    <section id="roleModel" onClick={(e) => e.target.id === "roleModel" && setCurrUser(false)} className="fixed inset-0 z-[999] flex items-center justify-center bg-black/60 px-4">
+    <section
+      id="roleModel"
+      onClick={(e) => e.target.id === "roleModel" && setCurrUser(false)}
+      className="fixed inset-0 z-[999] flex items-center justify-center bg-black/60 px-4"
+    >
       <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-6 relative">
         {/* Close Icon */}
-        <div onClick={() => setCurrUser(false)} className="absolute top-4 right-4">
+        <div
+          onClick={() => setCurrUser(false)}
+          className="absolute top-4 right-4"
+        >
           <IoMdClose
             className="text-gray-500 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white cursor-pointer"
             size={24}
@@ -80,7 +88,9 @@ function RoleModel({ currUser, setusers, setCurrUser }) {
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="Admin">Admin</option>
-            <option value="General">General</option>
+            <option value="User">User</option>
+            <option value="Seller">Seller</option>
+            <option value="Moderator">Moderator</option>
           </select>
         </div>
 
