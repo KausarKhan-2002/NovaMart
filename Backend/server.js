@@ -13,10 +13,6 @@ const PORT = process.env.PORT;
 const MONGODB_URI = process.env.MONGODB_URI;
 
 app.use(express.json());
-const allowedOrigins = [
-  "http://localhost:5173", // Local development (for now)
-];
-
 app.use(
   cors({
     origin: ["http://localhost:5173", "https://novamart-client.onrender.com"], // to test locally also

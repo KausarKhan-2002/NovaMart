@@ -43,7 +43,7 @@ function AddImagesAndView({
         {productImages.map((img, ind) => (
           <div key={ind} className="relative">
             <img
-              src={img.url}
+              src={img?.url}
               alt={`Preview ${ind}`}
               className="w-20 h-20 sm:w-25 sm:h-25 md:w-30 md:h-30 object-cover rounded-x"
             />

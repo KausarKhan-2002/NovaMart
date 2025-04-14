@@ -6,13 +6,12 @@ import ProductView from "../Components/AdminProducts/ProductView";
 function AllProducts() {
   const [showForm, setShowForm] = useState(false);
   const [productEditId, setProductEditId] = useState(null);
-  // console.log(productManager);
-  
+  const [upload, setUpload] = useState(false)
 
   return (
     <section className="h-[87vh] overflow-y-auto scrollbar-custom">
     {/* Product header */}
-      <ProductHeader setShowForm={setShowForm} />
+      <ProductHeader setUpload={setUpload} setShowForm={setShowForm} />
 
       {/* Product management form */}
       {showForm && (
@@ -20,6 +19,8 @@ function AllProducts() {
           showForm={showForm}
           setShowForm={setShowForm}
           productEditId={productEditId}
+          upload={upload}
+
         />
       )}
 
@@ -27,6 +28,7 @@ function AllProducts() {
       <ProductView
         setShowForm={setShowForm}
         setProductEditId={setProductEditId}
+        setUpload={setUpload}
       />
     </section>
   );

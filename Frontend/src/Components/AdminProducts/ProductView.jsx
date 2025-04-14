@@ -7,7 +7,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import AdminProductShimmer from "../ShimmerUI/AdminProductShimmer";
 
-function ProductView({ setShowForm, setProductEditId }) {
+function ProductView({ setShowForm, setProductEditId, setUpload }) {
   const products = useSelector((store) => store.products);
   const productVisible = useProductView();
 
@@ -31,7 +31,7 @@ function ProductView({ setShowForm, setProductEditId }) {
     setProductEditId(productId);
   };
 
-  if (!products.length) return <AdminProductShimmer />
+  if (!products.length) return <AdminProductShimmer />;
 
   return (
     <div className="grid gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 p-4">
@@ -40,23 +40,34 @@ function ProductView({ setShowForm, setProductEditId }) {
           key={product._id}
           className="relative group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow hover:shadow-lg transition"
         >
-          {/* Image Slider */}
-          <Slider {...sliderSettings}>
-            {product.images.map((img) => (
-              <div key={img._id}>
-                <img
-                  src={img.url}
-                  alt={product.name}
-                  className="w-full h-48 object-cover"
-                />
-              </div>
-            ))}
-          </Slider>
+          {/* Image / Slider */}
+          {product.images.length > 1 ? (
+            <Slider {...sliderSettings}>
+              {product.images.map((img) => (
+                <div key={img._id}>
+                  <img
+                    src={img.url}
+                    alt={product.name}
+                    className="w-full h-48 object-cover"
+                  />
+                </div>
+              ))}
+            </Slider>
+          ) : (
+            <img
+              src={product.images[0]?.url}
+              alt={product.name}
+              className="w-full h-48 object-cover"
+            />
+          )}
 
           {/* Edit Button */}
           <button
-            onClick={() => handleEdit(product._id)}
-            className="hidden group-hover:block absolute top-3 right-3 bg-gray-100 dark:bg-gray-700 p-2 rounded-full text-gray-700 dark:text-white hover:text-blue-600 cursor-pointer"
+            onClick={() => {
+              handleEdit(product._id);
+              setUpload(false);
+            }}
+            className="lg:hidden group-hover:block absolute top-3 right-3 bg-gray-100 dark:bg-gray-700 p-2 rounded-full text-gray-700 dark:text-white hover:text-blue-600 cursor-pointer"
             title="Edit"
           >
             <FiEdit size={18} />
@@ -71,12 +82,8 @@ function ProductView({ setShowForm, setProductEditId }) {
               {product.description?.slice(0, 100)}...
             </p>
             <div className="mt-2 flex justify-between items-center">
-              <span className="text-green-600 font-bold">
-                ₹{product.selling}
-              </span>
-              <span className="line-through text-gray-400 text-sm">
-                ₹{product.price}
-              </span>
+              <span className="text-green-600 font-bold">₹{product.selling}</span>
+              <span className="line-through text-gray-400 text-sm">₹{product.price}</span>
             </div>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               Stock: {product.stock} | Category: {product.category}

@@ -16,10 +16,10 @@ const productSlice = createSlice({
 
     // Update product based on product ID
     updateProduct: (state, action) => {
-      const updated = action.payload;
-      const index = state.findIndex((p) => p._id === updated._id);
+      const updatedProduct = action.payload;
+      const index = state.findIndex((p) => p._id === updatedProduct._id);
       if (index != -1) {
-        state[index] = updated;
+        state[index] = updatedProduct;
       }
     },
 
@@ -29,20 +29,24 @@ const productSlice = createSlice({
       return state.filter((p) => p._id != productId);
     },
 
-    deleteImage: (state, action) => {
-      const { productId, publicId } = action.payload;
-      console.log("from slice productId:",productId);
-      console.log("form slice publicId:", publicId);
-
+    addImage: (state, action) => {
+      const { productId, url } = action.payload;
       const product = state.find((p) => p._id === productId);
       if (product) {
-        product.images = product.images.filter(
-          (img) => img.public_id !== publicId
-        );
+        product.images.push({ url, public_id: null });
+      }
+    },
+
+    deleteImage: (state, action) => {
+      const { productId, index } = action.payload;
+      const product = state.find((p) => p._id === productId);
+      if (product) {
+        product.images = product.images.filter((img, ind) => ind !== index);
       }
     },
   },
 });
 
 export default productSlice.reducer;
-export const { setProduct, addProduct, updateProduct, deleteImage } = productSlice.actions;
+export const { setProduct, addProduct, updateProduct, addImage, deleteImage } =
+  productSlice.actions;

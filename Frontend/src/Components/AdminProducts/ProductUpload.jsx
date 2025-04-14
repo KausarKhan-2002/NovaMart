@@ -12,11 +12,14 @@ import Spinner from "../../Helpers/Spinner";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { BASE_URL } from "../../Utils/constants";
-import { deleteImage } from "../../Store/productSlice";
+import { addImage, deleteImage } from "../../Store/productSlice";
+import { useUpdateProduct } from "../../Hooks/useUpdateProduct";
 
-function ProductUpload({ setShowForm, productEditId }) {
+function ProductUpload({ setShowForm, productEditId, upload }) {
   const products = useSelector((store) => store.products);
-  const product = products.find((p) => p._id === productEditId);
+  const product = !upload
+    ? products.find((p) => p._id === productEditId)
+    : null;
   console.log(product);
 
   const [productInfo, setProductInfo] = useState({
@@ -45,8 +48,10 @@ function ProductUpload({ setShowForm, productEditId }) {
   const [sellingPrice, setSellingPrice] = useState(productInfo.price);
   const [loader, setLoader] = useState(false);
   const [spin, setSpin] = useState(false);
+  const [updatedImgFiles, setUpdatedImgFiles] = useState([]);
   const cloudinaries = useMultipleCloudinaries();
   const uploadProduct = useUploadProduct();
+  const updateProduct = useUpdateProduct();
   const dispatch = useDispatch();
   const limit = 400;
   console.log(productInfo);
@@ -99,41 +104,65 @@ function ProductUpload({ setShowForm, productEditId }) {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    setImgFiles((prev) => [...prev, file]);
-    const blob = URL.createObjectURL(file);
+    console.log(file);
+
+    const url = URL.createObjectURL(file);
+    console.log(url);
+
+    if (upload) {
+      setImgFiles((prev) => [...prev, file]);
+    } else {
+      dispatch(addImage({ productId: product._id, url }));
+      setUpdatedImgFiles((prev) => [...prev, file]);
+    }
     setProductInfo((prev) => ({
       ...prev,
-      images: [...prev.images, { url: blob, public_id: null }],
+      images: [...prev.images, { url, public_id: null }],
     }));
   };
 
   const handleProductUpload = async (e) => {
     e.preventDefault();
 
-    const imgUrls = await cloudinaries(imgFiles, setLoader);
+    // Only cloudinary image hold while updating
+    const clouds =
+      !upload &&
+      product.images.filter((img) =>
+        img.url.includes("https://res.cloudinary.com/")
+      );
+
+    const imgUrls = await cloudinaries(
+      upload ? imgFiles : updatedImgFiles,
+      setLoader
+    );
+
     console.log("urls", imgUrls);
     if (!imgUrls) return;
 
     // locally Update with cloudinary image urls
+    const productObj = upload ? productInfo : product
     const finalProductInfo = {
-      ...productInfo,
-      images: imgUrls,
+      ...productObj,
+      images: upload ? imgUrls : [...clouds, ...imgUrls],
     };
-    console.log("finalProduct:", finalProductInfo);
+    // console.log("finalProduct:", finalProductInfo);
 
-    uploadProduct(finalProductInfo, setLoader);
+    upload && uploadProduct(finalProductInfo, setLoader);
+    !upload && updateProduct(finalProductInfo, setLoader);
   };
 
   const handleImageDelete = (delInd, img) => {
-
     const filterBlobs = productInfo.images.filter((img, ind) => ind != delInd);
-
     const publicId = img?.public_id;
+    console.log(delInd, img);
 
-    const deleteImgFromStore = () => {
-      if (publicId) {
-        dispatch(deleteImage({productId: product._id, publicId}));
-      } else {
+    const deleteImgFromStateOrRedux = () => {
+      // Delete image during updating
+      !upload &&
+        dispatch(deleteImage({ productId: product._id, index: delInd }));
+
+      // Delet image during uploading
+      if (upload) {
         const filterFiles = imgFiles.filter((file, ind) => ind != delInd);
         setProductInfo((prev) => ({ ...prev, images: filterBlobs }));
         setImgFiles(filterFiles);
@@ -150,7 +179,7 @@ function ProductUpload({ setShowForm, productEditId }) {
         );
         console.log(res);
 
-        deleteImgFromStore();
+        deleteImgFromStateOrRedux();
       } catch (err) {
         console.log(err.message);
       } finally {
@@ -158,7 +187,7 @@ function ProductUpload({ setShowForm, productEditId }) {
       }
     };
 
-    !publicId && deleteImgFromStore();
+    !publicId && deleteImgFromStateOrRedux();
 
     publicId && deleteImageFromDB();
   };
@@ -226,9 +255,9 @@ function ProductUpload({ setShowForm, productEditId }) {
           <button
             onClick={handleProductUpload}
             type="submit"
-            className="flex gap-2 items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 w-full md:w-fit rounded-xl transition-all cursor-pointer"
+            className="flex gap-2 items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 w-full md:w-fit rounded-xl transition-all cursor-pointer"
           >
-            {loader && <Spinner />}{" "}
+            {loader && <Spinner />}
             {product ? "Update product" : "Upload Product"}
           </button>
         </div>

@@ -3,8 +3,9 @@ const Product = require("../models/productModel"); // Assuming your product sche
 const { catchError } = require("../helper/catchError");
 const { isAuthorised } = require("../middlewares/isAuthorised");
 const router = express.Router();
-const cloudinary = require("../config/cloudinary")
+const cloudinary = require("../config/cloudinary");
 
+// To upload a new product
 router.post("/upload-product", isAuthorised, async (req, res) => {
   // Extract all product details from client request body
   const {
@@ -64,6 +65,7 @@ router.post("/upload-product", isAuthorised, async (req, res) => {
   }
 });
 
+// To retrieve all the products
 router.get("/view", isAuthorised, async (req, res) => {
   try {
     // 1. Extract user ID from the authorised request
@@ -92,6 +94,7 @@ router.get("/view", isAuthorised, async (req, res) => {
   }
 });
 
+// To delete a existing product image
 router.delete("/:productId/image/:publicId", isAuthorised, async (req, res) => {
   try {
     const { productId, publicId } = req.params;
@@ -114,6 +117,80 @@ router.delete("/:productId/image/:publicId", isAuthorised, async (req, res) => {
       success: true,
       message: "Image deleted successfully",
       product: updatedProduct,
+    });
+  } catch (err) {
+    catchError(err, res);
+  }
+});
+
+// To edit product
+router.patch("/edit/:productId", isAuthorised, async (req, res) => {
+  try {
+    // 1. Extract all product details from req.body
+    const {
+      name,
+      description,
+      price,
+      brand,
+      category,
+      stock,
+      images,
+      selling,
+      discount,
+      shippingDetails,
+    } = req.body;
+
+    // 2. Check if any required field is falsy (empty string, null, undefined, etc.)
+    if (
+      !name ||
+      !description ||
+      !price ||
+      !brand ||
+      !category ||
+      !stock ||
+      !images.length ||
+      !shippingDetails
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required and cannot be empty.",
+      });
+    }
+
+    // 3. Extract productId from req.params, coming from client
+    const { productId } = req.params;
+
+    // 4. Keep all product pdated details in an object
+    const updateProduct = {
+      name,
+      description,
+      price,
+      brand,
+      category,
+      stock,
+      images,
+      selling,
+      discount,
+      shippingDetails,
+    };
+
+    // 5. Find product via productId from product collection
+    const foundProduct = await Product.findByIdAndUpdate(
+      productId,
+      updateProduct,
+      { new: true }
+    );
+
+    // 6. If productId is invalid throw an error
+    if (!foundProduct)
+      throw new Error(
+        "Invalid product credential please refresh the page and try again!"
+      );
+
+    res.status(200).json({
+      success: true,
+      message: "Product updated successfully",
+      product: foundProduct,
     });
   } catch (err) {
     catchError(err, res);
