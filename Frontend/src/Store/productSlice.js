@@ -29,6 +29,10 @@ const productSlice = createSlice({
       return state.filter((p) => p._id != productId);
     },
 
+    removeAllProducts: () => {
+      return []
+    },
+
     addImage: (state, action) => {
       const { productId, url } = action.payload;
       const product = state.find((p) => p._id === productId);
@@ -48,5 +52,5 @@ const productSlice = createSlice({
 });
 
 export default productSlice.reducer;
-export const { setProduct, addProduct, updateProduct, addImage, deleteImage } =
+export const { setProduct, addProduct, updateProduct, removeAllProducts, addImage, deleteImage } =
   productSlice.actions;

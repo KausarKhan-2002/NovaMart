@@ -45,7 +45,7 @@ route.post("/signup", async (req, res) => {
       password: hashedPassword,
       gender,
       DOB,
-      role: "GENERAL",
+      role: "User",
       cloudinaryImage: cloudinaryImage || "",
     });
 

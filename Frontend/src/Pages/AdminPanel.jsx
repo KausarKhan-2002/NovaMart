@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { DEFAULT_PROFILE } from "../Utils/constants";
 import { FaUsers } from "react-icons/fa";
@@ -10,13 +10,13 @@ function AdminPanel() {
 
   const imgUrl = user?.cloudinaryImage || DEFAULT_PROFILE;
   const username = user?.username || "admin";
-  const navigate = useNavigate()
-  const location = useLocation()
-  const path = location.pathname
+  const navigate = useNavigate();
+  const location = useLocation();
+  const path = location.pathname;
 
   useEffect(() => {
-    navigate("all-users")
-  }, [])
+    user?.role === "Admin" ? navigate("all-users") : navigate("all-products");
+  }, []);
 
   return (
     <div className="flex flex-col md:flex-row min-h-[91vh]">
@@ -42,17 +42,23 @@ function AdminPanel() {
         </div>
 
         <nav className="flex flex-col gap-2 p-4 text-gray-700">
-          <Link
-            to="all-users"
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg ${path === "/admin-panel/all-users" && "bg-slate-100"} hover:bg-slate-100 font-medium transition`}
-          >
-            <FaUsers size={20}/> All Users
-          </Link>
+          {user?.role === "Admin" && (
+            <Link
+              to="all-users"
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
+                path === "/admin-panel/all-users" && "bg-slate-100"
+              } hover:bg-slate-100 font-medium transition`}
+            >
+              <FaUsers size={20} /> All Users
+            </Link>
+          )}
           <Link
             to="all-products"
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg ${path === "/admin-panel/all-products" && "bg-slate-100"} hover:bg-slate-100 font-medium transition`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
+              path === "/admin-panel/all-products" && "bg-slate-100"
+            } hover:bg-slate-100 font-medium transition`}
           >
-            <TbPackages size={20}/> All Products
+            <TbPackages size={20} /> All Products
           </Link>
         </nav>
       </aside>

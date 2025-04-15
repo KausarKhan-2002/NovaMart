@@ -69,6 +69,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
       enum: ["Admin", "User", "Seller", "Moderator"],
+      default: "User"
     },
   },
   { timestamps: true }

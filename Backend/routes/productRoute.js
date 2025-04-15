@@ -82,12 +82,15 @@ router.get(
       const userId = req.user._id;
 
       // 2. Find all products uploaded by the user
-      const foundProducts = await Product.find({ productOwner: userId });
+      const foundProducts =
+        req.user.role === "Admin"
+          ? await Product.find()
+          : await Product.find({ productOwner: userId });
 
       // 3. If no products are found
       if (!foundProducts.length) {
         return res.status(200).json({
-          success: true,
+          success: false,
           message: "No products found.",
           products: [],
         });

@@ -9,14 +9,20 @@ import { DEFAULT_PROFILE } from "../../Utils/constants";
 import { IoChevronDown } from "react-icons/io5";
 import { themeSwitcher } from "../../Store/toggleSlice";
 
-function DesktopNavbar({ sidebarOpen, setSidebarOpen, bgColor, textColor, theme}) {
+function DesktopNavbar({
+  sidebarOpen,
+  setSidebarOpen,
+  bgColor,
+  textColor,
+  theme,
+}) {
   const [showDropdown, setShowDropdown] = useState(false);
   const dispatch = useDispatch();
 
   const user = useSelector((store) => store.user);
   const location = useLocation();
   const path = location.pathname.split("/")[1];
-  
+
   const navigate = useNavigate();
   const logout = useLogout();
 
@@ -34,7 +40,9 @@ function DesktopNavbar({ sidebarOpen, setSidebarOpen, bgColor, textColor, theme}
     <div className={`flex items-center space-x-4`}>
       {/* Desktop Nav */}
       <nav className="hidden md:flex items-center space-x-4 lg:space-x-7">
-        <div className={`flex items-center gap-1 ${bgColor?.color2} rounded-full pr-1`}>
+        <div
+          className={`flex items-center gap-1 ${bgColor?.color2} rounded-full pr-1`}
+        >
           <img
             onClick={() => setShowDropdown((prev) => !prev)}
             src={imgUrl}
@@ -65,7 +73,7 @@ function DesktopNavbar({ sidebarOpen, setSidebarOpen, bgColor, textColor, theme}
             >
               Home
             </Link>
-            {user?.role === "Admin" && (
+            {["Admin", "Seller", "Moderator"].includes(user?.role) && (
               <Link
                 onClick={() =>
                   path !== "/admin-panel" && setShowDropdown(false)

@@ -1,11 +1,12 @@
 import axios from "axios";
 import { BASE_URL } from "../Utils/constants";
 import { toast } from "react-hot-toast";
-import { useDispatch } from "react-redux";
-import { addProduct } from "../Store/productSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { addProduct, removeAllProducts } from "../Store/productSlice";
 
 export const useUploadProduct = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const products = useSelector((store) => store.products);
 
   return async (productInfo, setLoader) => {
     setLoader(true);
@@ -30,7 +31,13 @@ export const useUploadProduct = () => {
         { withCredentials: true }
       );
       console.log(res.data.product);
-      dispatch(addProduct(res.data.product))
+      if (products.length === 1 && products[0]?.success === false) {
+        dispatch(removeAllProducts());
+        dispatch(addProduct(res.data.product));
+      }
+      else {
+        dispatch(addProduct(res.data.product));
+      }
       toast.success(res.data.message);
       // setProductInfo({
       //   name: "",

@@ -1,18 +1,19 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
-import { Navigate, Outlet } from 'react-router-dom'
+import React from "react";
+import { useSelector } from "react-redux";
+import { Navigate, Outlet } from "react-router-dom";
 
 function AdminProtector() {
-    const user = useSelector(store => store.user)
-    
-    // Protect user routes
-    if (!user) <Navigate path="/auth" replace />
+  const user = useSelector((store) => store.user);
 
-    // Protect Admin routes
-    if (user?.role != "Admin") <Navigate path="/unauthorized" replace />
+  // Protect user routes
+  if (!user) <Navigate path="/auth" replace />;
 
-    // Not protection
-    return <Outlet />
+  // Protect Admin routes
+  if (["Admin", "Seller", "Moderator"].includes(user?.role))
+    <Navigate path="/unauthorized" replace />;
+
+  // Not protection
+  return <Outlet />;
 }
 
-export default AdminProtector
+export default AdminProtector;

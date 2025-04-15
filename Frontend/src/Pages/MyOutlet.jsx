@@ -62,7 +62,13 @@ function MyOutlet() {
           <Route element={<AdminProtector />}>
             <Route
               path="/admin-panel"
-              element={user?.role === "Admin" ? <AdminPanel /> : <ErrorPage />}
+              element={
+                ["Admin", "Seller", "Moderator"].includes(user?.role) ? (
+                  <AdminPanel />
+                ) : (
+                  <ErrorPage />
+                )
+              }
             >
               <Route
                 path="all-users"
