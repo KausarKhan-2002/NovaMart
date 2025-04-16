@@ -222,7 +222,7 @@ router.patch(
 );
 
 // Route to fetch featured products
-router.get("/featured-products", async (req, res) => {
+router.get("/banner", async (req, res) => {
   try {
     // 1. This is the tags for higher priority
     const priorityTags = [
@@ -235,8 +235,9 @@ router.get("/featured-products", async (req, res) => {
 
     // 2. Fetch featured products based on specific tags
     const featuredProducts = await Product.find({
-      priorityTags: { $in: priorityTags },
+      tags: { $in: priorityTags },
     }).limit(5); // Limit to the top 5 products
+    console.log(featuredProducts);
 
     // 3. If no featured products are found
     if (featuredProducts.length === 0) {
@@ -245,11 +246,11 @@ router.get("/featured-products", async (req, res) => {
       });
     }
 
-    // 4. Respond with the featured products
+    // 4. Respond with the featured banner
     res.status(200).json({
       success: true,
-      message: "Featured products fetched successfully",
-      featuredProducts,
+      message: "Top banner images are fetched successfully",
+      products: featuredProducts,
     });
   } catch (err) {
     catchError(err, res);
@@ -264,8 +265,8 @@ router.put(
   async (req, res) => {
     try {
       const { tags } = req.body;
-      console.log("myTags",tags);
-      console.log("productId",req.params.productId);
+      console.log("myTags", tags);
+      console.log("productId", req.params.productId);
 
       // 1. List of tags considered as "featured"
       const featureTags = [

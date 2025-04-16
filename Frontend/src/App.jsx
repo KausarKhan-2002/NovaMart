@@ -22,7 +22,7 @@ function App() {
   }, []);
 
   return (
-    <div className="bg-slate-100/40 p-2">
+    <div className="bg-slate-100/40 py-2">
       <Toaster />
       <ToastContainer />
       <Header />
