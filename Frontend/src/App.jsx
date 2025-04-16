@@ -5,21 +5,24 @@ import MyOutlet from "./Pages/MyOutlet";
 import { Toaster } from "react-hot-toast";
 import { useProfile } from "./Hooks/useProfile";
 import { useSelector } from "react-redux";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { OWN_PROTOTYPE_METHODS } from "./Helpers/myPrototype";
 
 function App() {
   const user = useSelector((store) => store.user);
-  // console.log(user);
 
   const profile = useProfile();
 
   useEffect(() => {
     profile();
+
+    // To enhance and use own methods attached in prototype
+    OWN_PROTOTYPE_METHODS();
   }, []);
 
   return (
-    <div className="bg-slate-100 p-2">
+    <div className="bg-slate-100/40 p-2">
       <Toaster />
       <ToastContainer />
       <Header />

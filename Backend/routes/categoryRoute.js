@@ -35,4 +35,36 @@ router.get("/categories", async (req, res) => {
   }
 });
 
+router.get("/collection/:productCategory", async (req, res) => {
+  try {
+    const { productCategory } = req.params;
+
+    // 1. If category is not sent from client
+    if (!productCategory) {
+      throw new Error("No product category found");
+    }
+
+    // 2. Fetch all the products that match the given category
+    const products = await Product.find({ category: productCategory });
+
+    // 3. If no products match, return a message
+    if (products.length === 0) {
+      return res.status(200).json({
+        success: false,
+        message: `No product found for this category: ${productCategory}`,
+        products: [],
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `${products.length} products found for category: ${productCategory}`,
+      products: products,
+    });
+  } catch (err) {
+    catchError(err, res);
+  }
+});
+
+
 module.exports = { categoryRoute: router };
