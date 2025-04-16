@@ -1,4 +1,4 @@
-import ProductCategories from '../Components/Landing/productCategories'
+import ProductCategories from '../Components/Landing/ProductCategories'
 import Banner from '../Components/Landing/Banner'
 
 function Home() {

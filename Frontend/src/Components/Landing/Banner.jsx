@@ -4,6 +4,7 @@ import { useBannerImages } from "../../Hooks/useBannerImages";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Link } from "react-router-dom";
+import BannerShimmer from "../ShimmerUI/BannerShimmer";
 
 function Banner() {
   const [banners, setBanners] = useState([]);
@@ -21,7 +22,7 @@ function Banner() {
   };
 
   if (banners.length === 0)
-    return <h1 className="text-center mt-10">Loading banners...</h1>;
+    return <BannerShimmer />
 
   const settings = {
     dots: true,
