@@ -30,7 +30,7 @@ const productSlice = createSlice({
     },
 
     removeAllProducts: () => {
-      return []
+      return [];
     },
 
     addImage: (state, action) => {
@@ -48,9 +48,27 @@ const productSlice = createSlice({
         product.images = product.images.filter((img, ind) => ind !== index);
       }
     },
+
+    updateTags: (state, action) => {
+      const { productId, updateTags } = action.payload;
+      console.log(productId);
+      console.log(updateTags);
+      
+      const product = state.find((p) => p._id === productId);
+      if (product) {
+        product.tags = updateTags;
+      }
+    },
   },
 });
 
 export default productSlice.reducer;
-export const { setProduct, addProduct, updateProduct, removeAllProducts, addImage, deleteImage } =
-  productSlice.actions;
+export const {
+  setProduct,
+  addProduct,
+  updateProduct,
+  removeAllProducts,
+  addImage,
+  deleteImage,
+  updateTags,
+} = productSlice.actions;

@@ -6,11 +6,12 @@ function AdminProtector() {
   const user = useSelector((store) => store.user);
 
   // Protect user routes
-  if (!user) <Navigate path="/auth" replace />;
+  if (!user) return <Navigate path="/auth" replace />;
 
   // Protect Admin routes
-  if (["Admin", "Seller", "Moderator"].includes(user?.role))
-    <Navigate path="/unauthorized" replace />;
+  if (!["Admin", "Seller", "Moderator"].includes(user?.role)) {
+    return <Navigate to="/unauthorized" replace />;
+  }
 
   // Not protection
   return <Outlet />;

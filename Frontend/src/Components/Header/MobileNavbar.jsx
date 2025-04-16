@@ -85,7 +85,7 @@ function MobileNavbar({
           </span>
         </button>
 
-        {user?.role === "Admin" && (
+        {["Admin", "Seller", "Moderator"].includes(user?.role) && (
           <Link
             to="/admin-panel"
             onClick={() => setSidebarOpen(false)}

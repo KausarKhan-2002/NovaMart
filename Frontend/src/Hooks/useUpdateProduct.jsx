@@ -1,5 +1,4 @@
 import axios from "axios";
-import React from "react";
 import { BASE_URL } from "../Utils/constants";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
@@ -10,6 +9,7 @@ export const useUpdateProduct = () => {
   const dispatch = useDispatch();
 
   return async (productData, setLoader) => {
+    
     if (
       !productData.name ||
       !productData.description ||

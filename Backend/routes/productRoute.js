@@ -6,7 +6,7 @@ const router = express.Router();
 const cloudinary = require("../config/cloudinary");
 const verifyRoles = require("../middlewares/verifyRoles");
 
-// To upload a new product
+// Route to upload a new product
 router.post(
   "/upload-product",
   isAuthorised,
@@ -71,7 +71,7 @@ router.post(
   }
 );
 
-// To retrieve all the products
+// Route to retrieve all the products
 router.get(
   "/view",
   isAuthorised,
@@ -82,10 +82,10 @@ router.get(
       const userId = req.user._id;
 
       // 2. Find all products uploaded by the user
-      const foundProducts =
-        req.user.role === "Admin"
-          ? await Product.find()
-          : await Product.find({ productOwner: userId });
+
+      const foundProducts = ["Admin", "Moderator"].includes(req.user.role)
+        ? await Product.find()
+        : await Product.find({ productOwner: userId });
 
       // 3. If no products are found
       if (!foundProducts.length) {
@@ -103,12 +103,12 @@ router.get(
         products: foundProducts,
       });
     } catch (err) {
-      catchError(err, res); // Assuming catchError is a custom error handler
+      catchError(err, res);
     }
   }
 );
 
-// To delete a existing product image
+// Route to delete a existing product image
 router.delete(
   "/:productId/image/:publicId",
   isAuthorised,
@@ -142,7 +142,7 @@ router.delete(
   }
 );
 
-// To edit product
+// Route to edit product
 router.patch(
   "/edit/:productId",
   isAuthorised,
@@ -214,6 +214,90 @@ router.patch(
         success: true,
         message: "Product updated successfully",
         product: foundProduct,
+      });
+    } catch (err) {
+      catchError(err, res);
+    }
+  }
+);
+
+// Route to fetch featured products
+router.get("/featured-products", async (req, res) => {
+  try {
+    // 1. This is the tags for higher priority
+    const priorityTags = [
+      "featured",
+      "bestseller",
+      "top-rated",
+      "flash-deal",
+      "exclusive",
+    ];
+
+    // 2. Fetch featured products based on specific tags
+    const featuredProducts = await Product.find({
+      priorityTags: { $in: priorityTags },
+    }).limit(5); // Limit to the top 5 products
+
+    // 3. If no featured products are found
+    if (featuredProducts.length === 0) {
+      return res.status(404).json({
+        message: "No featured products available",
+      });
+    }
+
+    // 4. Respond with the featured products
+    res.status(200).json({
+      success: true,
+      message: "Featured products fetched successfully",
+      featuredProducts,
+    });
+  } catch (err) {
+    catchError(err, res);
+  }
+});
+
+// Route to update product tags and update the isFeatured status based on tags
+router.put(
+  "/update/tags/:productId/feature",
+  isAuthorised,
+  verifyRoles("Admin", "Moderator"), // Middleware to allow only Admins or Moderators
+  async (req, res) => {
+    try {
+      const { tags } = req.body;
+      console.log("myTags",tags);
+      console.log("productId",req.params.productId);
+
+      // 1. List of tags considered as "featured"
+      const featureTags = [
+        "featured",
+        "sale",
+        "trending",
+        "new",
+        "top-rated",
+        "bestseller",
+        "limited-stock",
+        "flash-deal",
+        "exclusive",
+      ];
+
+      // 2. Determine if any of the selected tags is a featured tag
+      const isFeatured = tags.some((tag) => featureTags.includes(tag));
+
+      // 3. Update product's tags and isFeatured status
+      const updatedProduct = await Product.findByIdAndUpdate(
+        req.params.productId,
+        { tags: tags, isFeatured: isFeatured },
+        { new: true } // Option to return the updated document
+      );
+
+      // 4. If no product found with that ID, return 404
+      if (!updatedProduct) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      res.status(200).json({
+        message: "Tags updated successfully",
+        product: updatedProduct,
       });
     } catch (err) {
       catchError(err, res);

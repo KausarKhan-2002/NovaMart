@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { DEFAULT_PROFILE } from "../Utils/constants";
 import { FaUsers } from "react-icons/fa";
@@ -7,16 +7,24 @@ import { TbPackages } from "react-icons/tb";
 
 function AdminPanel() {
   const user = useSelector((store) => store.user);
-
+  console.log("Admin panel");
+  const [panelKey, setPanelKey] = useState(0)
   const imgUrl = user?.cloudinaryImage || DEFAULT_PROFILE;
   const username = user?.username || "admin";
   const navigate = useNavigate();
   const location = useLocation();
   const path = location.pathname;
 
+  // if (path === "/admin-panel") {
+  //   setPanelKey(prev => prev+1)
+  // }
+
   useEffect(() => {
-    user?.role === "Admin" ? navigate("all-users") : navigate("all-products");
-  }, []);
+    if (user) {
+      user.role === "Admin" ? navigate("all-users") : navigate("all-products");
+    }
+  }, [panelKey]);
+
 
   return (
     <div className="flex flex-col md:flex-row min-h-[91vh]">

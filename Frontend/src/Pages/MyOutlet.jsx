@@ -6,6 +6,7 @@ import AuthShimmer from "../Components/ShimmerUI/AuthShimmer";
 import ErrorShimmer from "../Components/ShimmerUI/ErrorShimmer";
 import CartShimmer from "../Components/ShimmerUI/CartShimmer";
 import AdminProtector from "../Components/Protection/AdminProtector";
+import FeatureTagEditor from "./FeatureTagEditor";
 
 const Home = lazy(() => import("./Home"));
 const Auth = lazy(() => import("./Auth"));
@@ -16,6 +17,7 @@ const AllUsers = lazy(() => import("./AllUsers"));
 const AllProducts = lazy(() => import("./AllProducts"));
 const ErrorPage = lazy(() => import("./ErrorPage"));
 const Cart = lazy(() => import("./Cart"));
+const ProductCollection = lazy(() => import("./ProductCollection"));
 
 function MyOutlet() {
   const user = useSelector((store) => store.user);
@@ -36,12 +38,8 @@ function MyOutlet() {
           }
         />
         <Route
-          path="/auth"
-          element={
-            <Suspense fallback={<AuthShimmer />}>
-              <Auth />
-            </Suspense>
-          }
+          path="/collection/:categoryName"
+          element={<ProductCollection />}
         />
         <Route
           path="/cart"
@@ -53,8 +51,17 @@ function MyOutlet() {
         />
 
         {/* ********** User routes ********** */}
+        <Route
+          path="/auth"
+          element={
+            <Suspense fallback={<AuthShimmer />}>
+              <Auth />
+            </Suspense>
+          }
+        />
         {user && <Route path="/profile" element={<Profile />} />}
         {user && <Route path="/profile/update" element={<UpdateProfile />} />}
+
 
         {/* ********** Admin routes ********** */}
         {/* Nested Routes for Admin Panel */}
@@ -62,13 +69,7 @@ function MyOutlet() {
           <Route element={<AdminProtector />}>
             <Route
               path="/admin-panel"
-              element={
-                ["Admin", "Seller", "Moderator"].includes(user?.role) ? (
-                  <AdminPanel />
-                ) : (
-                  <ErrorPage />
-                )
-              }
+              element={["Admin", "Seller", "Moderator"].includes(user?.role) ? <AdminPanel /> : <ErrorPage />}
             >
               <Route
                 path="all-users"
@@ -87,6 +88,10 @@ function MyOutlet() {
                     <AllProducts />
                   </Suspense>
                 }
+              />
+              <Route
+                path="edit/tags/:productId"
+                element={<FeatureTagEditor />}
               />
             </Route>
           </Route>

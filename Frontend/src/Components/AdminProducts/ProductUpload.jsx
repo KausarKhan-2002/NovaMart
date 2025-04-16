@@ -19,8 +19,7 @@ function ProductUpload({ setShowForm, productEditId, upload }) {
   const products = useSelector((store) => store.products);
   const product = !upload
     ? products.find((p) => p._id === productEditId)
-    : null;
-  console.log(product);
+    : null
 
   const [productInfo, setProductInfo] = useState({
     name: product?.name || "",
@@ -54,7 +53,6 @@ function ProductUpload({ setShowForm, productEditId, upload }) {
   const updateProduct = useUpdateProduct();
   const dispatch = useDispatch();
   const limit = 400;
-  console.log(productInfo);
 
   useEffect(() => {
     setProductInfo((prev) => ({
@@ -120,7 +118,7 @@ function ProductUpload({ setShowForm, productEditId, upload }) {
       images: [...prev.images, { url, public_id: null }],
     }));
   };
-
+ 
   const handleProductUpload = async (e) => {
     e.preventDefault();
 
@@ -136,16 +134,19 @@ function ProductUpload({ setShowForm, productEditId, upload }) {
       setLoader
     );
 
-    console.log("urls", imgUrls);
-    if (!imgUrls) return;
+    if (updatedImgFiles.length > 0 && !imgUrls) return;
 
-    // locally Update with cloudinary image urls
-    const productObj = upload ? productInfo : product
+    // During uploading (productInfo) & during updating (productInfo + current ProductId)
+    const productObj = upload ? productInfo : {...productInfo, _id: product._id};
+
     const finalProductInfo = {
       ...productObj,
-      images: upload ? imgUrls : [...clouds, ...imgUrls],
+      images: upload
+        ? imgUrls
+        : updatedImgFiles.length
+        ? [...clouds, ...imgUrls]
+        : productInfo.images,
     };
-    // console.log("finalProduct:", finalProductInfo);
 
     upload && uploadProduct(finalProductInfo, setLoader);
     !upload && updateProduct(finalProductInfo, setLoader);

@@ -10,7 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const user = useSelector((store) => store.user);
-  console.log(user);
+  // console.log(user);
 
   const profile = useProfile();
 
@@ -19,7 +19,7 @@ function App() {
   }, []);
 
   return (
-    <div className="bg-slate-100">
+    <div className="bg-slate-100 p-2">
       <Toaster />
       <ToastContainer />
       <Header />

@@ -7,6 +7,7 @@ const { authRoute } = require("./routes/userRoute");
 const { profileRoute } = require("./routes/profileRoute");
 const { adminRoute } = require("./routes/adminRoute");
 const { productRoute } = require("./routes/productRoute");
+const { categoryRoute } = require("./routes/categoryRoute");
 
 const app = express();
 const PORT = process.env.PORT;
@@ -46,4 +47,4 @@ connectionDB();
 app.use("/auth", authRoute);
 app.use("/profile", profileRoute);
 app.use("/credential", adminRoute);
-app.use("/product", productRoute);
+app.use("/product", productRoute, categoryRoute);

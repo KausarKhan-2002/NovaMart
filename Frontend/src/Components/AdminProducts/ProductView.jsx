@@ -3,6 +3,8 @@ import { useSelector } from "react-redux";
 import { useProductView } from "../../Hooks/useProductView";
 import Slider from "react-slick";
 import { FiEdit } from "react-icons/fi";
+import { FaTag } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -11,6 +13,7 @@ import NoProductShimmer from "../ShimmerUI/NoProductShimmer";
 
 function ProductView({ setShowForm, setProductEditId, setUpload }) {
   const products = useSelector((store) => store.products);
+  const user = useSelector((store) => store.user);
   const productVisible = useProductView();
 
   useEffect(() => {
@@ -33,15 +36,15 @@ function ProductView({ setShowForm, setProductEditId, setUpload }) {
     setProductEditId(productId);
   };
 
-  if (!products.length) return <AdminProductShimmer />;
-  if (products[0]?.success === false  ) return <NoProductShimmer />
-    
+  if (!products.length && !["Admin", "Moderator"].includes(user?.roles)) return <AdminProductShimmer />;
+  if (products[0]?.success === false && !["Admin", "Moderator"].includes(user?.role)) return <NoProductShimmer />;
+
   return (
     <div className="grid gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 p-4">
       {products.map((product) => (
         <div
           key={product._id}
-          className="relative group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow hover:shadow-lg transition"
+          className="relative group bg-white border border-gray-200  rounded-xl overflow-hidden shadow hover:shadow-lg transition"
         >
           {/* Image / Slider */}
           {product?.images?.length > 1 ? (
@@ -63,9 +66,8 @@ function ProductView({ setShowForm, setProductEditId, setUpload }) {
               className="w-full h-48 object-cover"
             />
           )}
-
           {/* Edit Button */}
-          <button
+          {["Admin", "Seller"].includes(user.role) && <button
             onClick={() => {
               handleEdit(product?._id);
               setUpload(false);
@@ -74,8 +76,18 @@ function ProductView({ setShowForm, setProductEditId, setUpload }) {
             title="Edit"
           >
             <FiEdit size={18} />
-          </button>
+          </button>}
 
+          {/* Featured button only for Admin, Moderator */}
+          {["Admin", "Moderator"].includes(user?.role) && (
+            <Link
+              to={`/admin-panel/edit/tags/${product._id}`}
+              className="absolute top-2 left-2 bg-white p-2 rounded-full shadow-md transition-all duration-200 ease-in-out text-emerald-600 cursor-pointer hover:scale-110"
+              title="Tagged Product"
+            >
+              <FaTag className="w-3 h-3" />
+            </Link>
+          )}
           {/* Product Info */}
           <div className="p-4">
             <h3 className="text-md font-semibold text-gray-800 dark:text-white">
