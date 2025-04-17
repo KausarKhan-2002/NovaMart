@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { IoMdClose } from "react-icons/io";
-import Spinner from "../../Helpers/Spinner";
+import Spinner from "../../Shared/Spinner";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { BASE_URL } from "../../Utils/constants";

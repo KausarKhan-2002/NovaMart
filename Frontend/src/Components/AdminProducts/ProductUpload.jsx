@@ -8,7 +8,7 @@ import ShippingDetails from "./ShippingDetails";
 import AddImagesAndView from "./AddImagesAndView";
 import { useMultipleCloudinaries } from "../../Hooks/useCloudinary";
 import { useUploadProduct } from "../../Hooks/useUploadProduct";
-import Spinner from "../../Helpers/Spinner";
+import Spinner from "../../Shared/Spinner";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { BASE_URL } from "../../Utils/constants";

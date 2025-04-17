@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useUpdateTags } from "../../Hooks/useUpdateTags";
-import Spinner from "../../Helpers/Spinner";
+import Spinner from "../../Shared/Spinner";
 
 function SaveCurrentTags({ currentTags, productId }) {
   const [loader, setLoader] = useState(false);

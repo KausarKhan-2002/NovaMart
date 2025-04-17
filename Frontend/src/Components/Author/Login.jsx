@@ -1,5 +1,5 @@
 import { BiShow, BiHide } from "react-icons/bi";
-import Spinner from "../../Helpers/Spinner";
+import Spinner from "../../Shared/Spinner";
 import { ImSpinner6 } from "react-icons/im";
 
 function Login({

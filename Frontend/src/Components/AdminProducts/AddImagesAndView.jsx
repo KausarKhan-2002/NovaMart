@@ -3,7 +3,7 @@ import PreviewImage from "./PreviewImage";
 import { RiUploadCloud2Fill } from "react-icons/ri";
 import { FaRegEye } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import Spinner from "../../Helpers/Spinner";
+import Spinner from "../../Shared/Spinner";
 
 function AddImagesAndView({
   productInfo,

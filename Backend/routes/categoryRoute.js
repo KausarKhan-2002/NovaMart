@@ -1,29 +1,30 @@
 const express = require("express");
-const Product = require("../models/productModel"); // Assuming your product schema is in 'models/Product.js'
+const Product = require("../models/productModel");
 const { catchError } = require("../helper/catchError");
 const { isAuthorised } = require("../middlewares/isAuthorised");
 const router = express.Router();
 
+// Route to get categories for top landing page
 router.get("/categories", async (req, res) => {
   try {
-    // 1. To get all the unique categories from Product
-    const categories = await Product.distinct("category");
+    const productCategories = await Product.aggregate([
+      {
+        $group: {
+          _id: "$category", // stage: 1 Grouped by category (this becomes the group _id)
+          product: { $first: "$$ROOT" }, // stage: 2 Retain the full document of the first product in each category
+        },
+      },
+    ]);
 
-    // 2. If no category found, return false to control UI
-    if (categories.length === 0) {
-      return res
-        .status(200)
-        .json({ success: false, message: "No category found" });
+    if (productCategories.length === 0) {
+      return res.status(200).json({
+        success: false,
+        message: "No category found",
+      });
     }
 
-    // 3. Push all the documents first match with category
-    const productCategories = [];
-    for (let c of categories) {
-      const product = await Product.findOne({ category: c });
-      if (product) {
-        productCategories.push(product);
-      }
-    }
+    // Set cache for 1 hour
+    res.set("Cache-Control", "public, max-age=3600");
 
     res.status(200).json({
       success: true,
@@ -35,6 +36,8 @@ router.get("/categories", async (req, res) => {
   }
 });
 
+
+// Route to get a collection category
 router.get("/collection/:productCategory", async (req, res) => {
   try {
     const { productCategory } = req.params;
@@ -65,6 +68,5 @@ router.get("/collection/:productCategory", async (req, res) => {
     catchError(err, res);
   }
 });
-
 
 module.exports = { categoryRoute: router };

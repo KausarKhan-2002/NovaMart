@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useProductCollection } from "../Hooks/useProductCollection";
 import { useParams } from "react-router-dom";
-import ProductImageSlider from "../Helpers/ProductImageSlider";
+import ProductImageSlider from "../Shared/ProductImageSlider";
 import CollectionShimmer from "../Components/ShimmerUI/CollectionShimmer";
 
 function ProductCollection() {

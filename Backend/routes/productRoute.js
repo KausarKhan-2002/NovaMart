@@ -246,7 +246,10 @@ router.get("/banner", async (req, res) => {
       });
     }
 
-    // 4. Respond with the featured banner
+    // 4. Set cache headers (cache for 1 hour)
+    res.set("cache-control", "public, max-age=3600");
+
+    // 5. Respond with the featured banner
     res.status(200).json({
       success: true,
       message: "Top banner images are fetched successfully",
@@ -305,5 +308,26 @@ router.put(
     }
   }
 );
+
+router.get("/top-discount", async (req, res) => {
+  try {
+    // 1. Fetch all products
+    const products = await Product.find().sort({ discount: -1 }).limit(10);
+
+    // 2.If there is not product
+    if (!products) {
+      return res
+        .status(200)
+        .json({ success: false, message: "No products found" });
+    }
+
+    // 3.
+    res
+      .status(200)
+      .json({ success: true, message: "Retrieve top discount products", products });
+  } catch (err) {
+    catchError(err, res);
+  }
+});
 
 module.exports = { productRoute: router };
