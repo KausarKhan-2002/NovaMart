@@ -19,7 +19,7 @@ function TopDiscountProduct({ discountProducts }) {
       <div className="absolute w-full h-[300px] bg-[#d6d19c] top-0 left-0 z-10" />
 
       {/* Discount Cards (Over the Half Bg) */}
-      <div className="relative z-20 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="relative z-20 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
         {discountProducts.map((product) => (
           <div
             key={product._id}
@@ -32,7 +32,7 @@ function TopDiscountProduct({ discountProducts }) {
             />
             <div className="p-4">
               <h2 className="text-lg font-semibold text-slate-800 truncate">
-                {product.name}
+                {product.name.capitalize()}
               </h2>
 
               <div className="mt-2 flex items-center justify-between">
@@ -47,7 +47,7 @@ function TopDiscountProduct({ discountProducts }) {
 
                 {/* Discount Badge */}
                 <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm">
-                  {Math.round((product.discount / product.price) * 100)}% OFF
+                  {product.discount}% OFF
                 </span>
               </div>
             </div>

@@ -2,9 +2,10 @@ const express = require("express");
 const { isAuthorised } = require("../middlewares/isAuthorised");
 const User = require("../models/userModel");
 const { catchError } = require("../helper/catchError");
+const verifyRoles = require("../middlewares/verifyRoles");
 const route = express.Router();
 
-route.patch("/role", isAuthorised, async (req, res) => {
+route.patch("/role", isAuthorised, verifyRoles("Admin"), async (req, res) => {
   try {
     const { role, id } = req.body;
     console.log(role);
@@ -41,7 +42,7 @@ route.patch("/role", isAuthorised, async (req, res) => {
   }
 });
 
-route.get("/users", isAuthorised, async (req, res) => {
+route.get("/users", isAuthorised, verifyRoles("Admin"), async (req, res) => {
   try {
     // 1. Fetch all users
     const users = await User.find().select("-password"); // exclude password field

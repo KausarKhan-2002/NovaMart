@@ -6,7 +6,6 @@ import AuthShimmer from "../Components/ShimmerUI/AuthShimmer";
 import ErrorShimmer from "../Components/ShimmerUI/ErrorShimmer";
 import CartShimmer from "../Components/ShimmerUI/CartShimmer";
 import AdminProtector from "../Components/Protection/AdminProtector";
-import FeatureTagEditor from "./FeatureTagEditor";
 
 const Home = lazy(() => import("./Home"));
 const Auth = lazy(() => import("./Auth"));
@@ -18,6 +17,8 @@ const AllProducts = lazy(() => import("./AllProducts"));
 const ErrorPage = lazy(() => import("./ErrorPage"));
 const Cart = lazy(() => import("./Cart"));
 const ProductCollection = lazy(() => import("./ProductCollection"));
+const FeatureTagEditor = lazy(() => import("./FeatureTagEditor"));
+const Sponsorship = lazy(() => import("./Sponsorship"));
 
 function MyOutlet() {
   const user = useSelector((store) => store.user);
@@ -62,14 +63,19 @@ function MyOutlet() {
         {user && <Route path="/profile" element={<Profile />} />}
         {user && <Route path="/profile/update" element={<UpdateProfile />} />}
 
-
         {/* ********** Admin routes ********** */}
         {/* Nested Routes for Admin Panel */}
         {user && (
           <Route element={<AdminProtector />}>
             <Route
               path="/admin-panel"
-              element={["Admin", "Seller", "Moderator"].includes(user?.role) ? <AdminPanel /> : <ErrorPage />}
+              element={
+                ["Admin", "Seller", "Moderator"].includes(user?.role) ? (
+                  <AdminPanel />
+                ) : (
+                  <ErrorPage />
+                )
+              }
             >
               <Route
                 path="all-users"
@@ -93,6 +99,7 @@ function MyOutlet() {
                 path="edit/tags/:productId"
                 element={<FeatureTagEditor />}
               />
+              <Route path="sponsorship/:productId" element={<Sponsorship />} />
             </Route>
           </Route>
         )}

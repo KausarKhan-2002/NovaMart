@@ -221,45 +221,6 @@ router.patch(
   }
 );
 
-// Route to fetch featured products
-router.get("/banner", async (req, res) => {
-  try {
-    // 1. This is the tags for higher priority
-    const priorityTags = [
-      "featured",
-      "bestseller",
-      "top-rated",
-      "flash-deal",
-      "exclusive",
-    ];
-
-    // 2. Fetch featured products based on specific tags
-    const featuredProducts = await Product.find({
-      tags: { $in: priorityTags },
-    }).limit(5); // Limit to the top 5 products
-    console.log(featuredProducts);
-
-    // 3. If no featured products are found
-    if (featuredProducts.length === 0) {
-      return res.status(404).json({
-        message: "No featured products available",
-      });
-    }
-
-    // 4. Set cache headers (cache for 1 hour)
-    res.set("cache-control", "public, max-age=3600");
-
-    // 5. Respond with the featured banner
-    res.status(200).json({
-      success: true,
-      message: "Top banner images are fetched successfully",
-      products: featuredProducts,
-    });
-  } catch (err) {
-    catchError(err, res);
-  }
-});
-
 // Route to update product tags and update the isFeatured status based on tags
 router.put(
   "/update/tags/:productId/feature",
@@ -282,6 +243,7 @@ router.put(
         "limited-stock",
         "flash-deal",
         "exclusive",
+        "best offer",
       ];
 
       // 2. Determine if any of the selected tags is a featured tag
@@ -309,25 +271,119 @@ router.put(
   }
 );
 
-router.get("/top-discount", async (req, res) => {
-  try {
-    // 1. Fetch all products
-    const products = await Product.find().sort({ discount: -1 }).limit(10);
+// Route to offer sponshorship for a product, If not sponshership plan
+router.put(
+  "/sponsorship/:productId",
+  isAuthorised,
+  verifyRoles("Admin", "seller"),
+  async (req, res) => {
+    try {
+      const { productId } = req.params;
 
-    // 2.If there is not product
-    if (!products) {
-      return res
-        .status(200)
-        .json({ success: false, message: "No products found" });
+      // 1. Check if product ID is present
+      if (!productId) {
+        throw new Error("Product ID not provided");
+      }
+      console.log(productId);
+      
+
+      // 2. Get sponsorship details from body
+      const { sponsorshipDetails } = req.body;
+      // console.log(sponsorshipDetails);
+      
+      
+      // 3. Validate type of sponsorship details
+      if (typeof sponsorshipDetails !== "object") {
+        throw new Error("Invalid sponsorship data format");
+      }
+
+      const { sponsoredBy, planType, pricePaid } = sponsorshipDetails;
+      console.log("sponsoredBy:",sponsoredBy);
+      console.log("planType:",planType);
+      console.log("pricePaid:",pricePaid);
+      
+
+      // 4. Validate all fields
+      if (!planType || typeof pricePaid !== "number") {
+        throw new Error("Incomplete or invalid sponsorship details");
+      }
+
+      // 5. Duration mapping
+      const planDurations = {
+        "1 Month": 1,
+        "3 Months": 3,
+        "6 Months": 6,
+        "1 Year": 12,
+        "2 Years": 24,
+      };
+
+      // 6. If price won't match according to plan
+      const planPrices = {
+        1: 150,
+        3: 250,
+        6: 450,
+        12: 800,
+        24: 1350,
+      };
+
+      // 7. Get a number of months in Number type
+      const durationInMonths = planDurations[planType];
+
+      // 8. If invalid plan type is provided
+      if (!durationInMonths) {
+        throw new Error("Invalid plan type selected");
+      }
+
+      // 9. Cleaner price validation
+      if (pricePaid !== planPrices[durationInMonths]) {
+        throw new Error(
+          "Invalid payment amount. Please ensure the price matches the selected sponsorship plan."
+        );
+      }
+
+      // 10. Find product
+      const product = await Product.findById(productId);
+
+      if (!product) {
+        throw new Error("Product not found");
+      }
+
+      // 11. Check already sponsored
+      if (product.isSponsored) {
+        throw new Error(
+          `This product is already sponsored by ${product.sponsorshipDetails.sponsoredBy} till ${product.sponsorshipDetails.expiresAt}`
+        );
+      }
+
+      // 12. Calculate expiry date
+      const purchasedAt = new Date();
+      const expiresAt = new Date(purchasedAt);
+      expiresAt.setMonth(expiresAt.getMonth() + durationInMonths);
+
+      // 13. Update sponsorship details
+      product.sponsorshipDetails = {
+        sponsoredBy: sponsoredBy || "novaMart",
+        planType,
+        pricePaid,
+        purchasedAt,
+        expiresAt,
+      };
+
+      // 14. set isSponsered true to flexible UI
+      product.isSponsored = true;
+
+      // 15. Save and send response
+      await product.save();
+
+      res.status(200).json({
+        success: true,
+        message: `This product is successfully sponsored by ${sponsoredBy}`,
+        product,
+      });
+    } catch (err) {
+      catchError(err, res);
     }
-
-    // 3.
-    res
-      .status(200)
-      .json({ success: true, message: "Retrieve top discount products", products });
-  } catch (err) {
-    catchError(err, res);
   }
-});
+);
 
 module.exports = { productRoute: router };

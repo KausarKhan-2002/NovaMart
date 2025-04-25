@@ -44,8 +44,8 @@ const NetworkStatus = () => {
       }`}
     >
       {isOnline
-        ? "✅ You are back online"
-        : "⚠️ You are offline. Please check your internet connection."}
+        ? "You are back online"
+        : "You are offline. Please check your internet connection."}
     </div>
   );
 };

@@ -74,6 +74,44 @@ const productSchema = new mongoose.Schema(
       default: false,
     },
 
+    totalReviews: {
+      type: Number,
+      default: 0,
+      validate: {
+        validator: function (value) {
+          return value >= 0;
+        },
+        message: "Invalid totalReviews: must be 0 or greater",
+      },
+    },
+
+    isBestOffer: {
+      type: Boolean,
+      default: null,
+    },
+
+    isSponsored: {
+      type: Boolean,
+      default: false,
+    },
+
+    sponsorshipDetails: {
+      sponsoredBy: { type: String, default: null },
+      planType: {
+        type: String,
+        enum: ["1 Month", "3 Months", "6 Months", "1 Year", "2 Year"],
+        default: null,
+      },
+      pricePaid: { type: Number, default: 0 },
+      purchasedAt: { type: Date, default: Date.now },
+      expiresAt: { type: Date, default: null },
+    },
+
+    orderCount: {
+      type: Number,
+      default: 0,
+    },
+
     tags: {
       type: [String],
       enum: [
@@ -87,6 +125,7 @@ const productSchema = new mongoose.Schema(
         "limited-stock", // Scarce stock to create urgency
         "flash-deal", // Time-limited sale or special discount
         "exclusive", // Product available only to certain customers
+        "best offer",
 
         // Non-featured Tags
         "normal", // recently upload product
