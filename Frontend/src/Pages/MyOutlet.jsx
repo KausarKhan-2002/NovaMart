@@ -6,6 +6,7 @@ import AuthShimmer from "../Components/ShimmerUI/AuthShimmer";
 import ErrorShimmer from "../Components/ShimmerUI/ErrorShimmer";
 import CartShimmer from "../Components/ShimmerUI/CartShimmer";
 import AdminProtector from "../Components/Protection/AdminProtector";
+import TopDiscountList from "./TopDiscountList";
 
 const Home = lazy(() => import("./Home"));
 const Auth = lazy(() => import("./Auth"));
@@ -50,6 +51,7 @@ function MyOutlet() {
             </Suspense>
           }
         />
+        <Route path="/top-discount" element={<TopDiscountList />} />
 
         {/* ********** User routes ********** */}
         <Route

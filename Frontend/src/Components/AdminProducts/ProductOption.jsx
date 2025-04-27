@@ -18,7 +18,7 @@ function ProductOption({
       className={`absolute top-9 right-6 z-20 bg-white border border-gray-200 rounded-xl shadow-md py-4 px-2 space-y-1 transition-all duration-100 ease-in-out ${
         isCurrentOption
           ? "opacity-100 w-auto h-auto p-4 right-0"
-          : "overflow-hidden right-[-64%]"
+          : "overflow-hidden right-[-100%] sm:right-[-90%]"
       }`}
     >
       {/* Edit Product */}

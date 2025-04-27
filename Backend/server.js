@@ -14,11 +14,25 @@ const app = express();
 const PORT = process.env.PORT;
 const MONGODB_URI = process.env.MONGODB_URI;
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://novamart-client.onrender.com",
+];
+
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://novamart-client.onrender.com"], // to test locally also
-    credentials: true, // if using cookies
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("not allowed by CORS"));
+      }
+    },
+
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+
+    credentials: true,
   })
 );
 app.use(cookieParser());

@@ -43,7 +43,7 @@ export const TAGS = {
 // Landing routes with BASE_URL
 const routes = ["/product/categories", "/product/banner", "/product/top-discount"];
 export const LANDING_ROUTES = routes.map((route) => BASE_URL + route);
-console.log(LANDING_ROUTES);
+// console.log(LANDING_ROUTES);
 
 
 // Random urgency messages

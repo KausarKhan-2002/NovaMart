@@ -33,7 +33,7 @@ router.get("/banner", async (req, res) => {
       )
     );
 
-    // 5. Return 5 premium products if 5 or more available
+    // 5. Return 5 premium products If 5 or more available
     if (premiumProducts.length >= 5) {
       return res.status(200).json({
         success: true,
@@ -65,9 +65,7 @@ router.get("/banner", async (req, res) => {
     // 10. If featured products are not enough, fallback to sponsored-only (3 months plan)
     const extraSponsored = shuffle(
       allProducts.filter(
-        (p) =>
-          p.isSponsored &&
-          p.sponsorshipDetails?.pricePaid <= 250
+        (p) => p.isSponsored && p.sponsorshipDetails?.pricePaid <= 250
       )
     ).slice(0, remainingSlots - featuredToAdd.length);
 
@@ -102,7 +100,7 @@ router.get("/banner", async (req, res) => {
 router.get("/top-discount", async (req, res) => {
   try {
     // 1. Fetch all products
-    const products = await Product.find().sort({ discount: -1 }).limit(10);
+    const products = await Product.find({ discount: { $gte: 50 } }).limit(6);
 
     // 2.If there is not product
     if (!products) {
@@ -117,6 +115,23 @@ router.get("/top-discount", async (req, res) => {
       message: "Retrieve top discount products",
       products,
     });
+  } catch (err) {
+    catchError(err, res);
+  }
+});
+
+router.get("/top-discount/all", async (req, res) => {
+  try {
+    let products = await Product.find({ discount: { $gte: 50 } });
+    products = products.length ? products : null
+
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "All top discount products",
+        products: products,
+      });
   } catch (err) {
     catchError(err, res);
   }

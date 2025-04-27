@@ -1,18 +1,24 @@
 import { MdOutlineArrowRightAlt } from "react-icons/md";
+import { useAllTopDiscount } from "../../Hooks/useAllTopDiscount";
+import { Link } from "react-router-dom";
 
 function TopDiscountProduct({ discountProducts }) {
+
   if (discountProducts.length === 0) return "Loading...";
 
   return (
     <section className="relative w-full  mt-16 px-6 py-6 overflow-hidden">
       {/* Header */}
       <div className="relative z-20">
-        <h1 className="font-semibold text-slate-800 text-2xl">
+        <h1 className="font-semibold text-slate-800 text-base md:text-2xl">
           BEST DISCOUNT FOR YOU
         </h1>
-        <button className="bg-[#47473f] px-4 py-2 text-[#dbdbd3] mt-3 mb-10 cursor-pointer hover:bg-[#3a3a34] hover:shadow-lg flex items-center gap-1 rounded-md">
+        <Link
+         to="/top-discount"
+          className="text-sm w-[135px] px-2 py-1 md:text-base md:w-[160px] md:px-4 md:py-2 bg-[#47473f]  text-[#dbdbd3] mt-3 mb-10 cursor-pointer hover:bg-[#3a3a34] hover:shadow-lg  flex items-center justify-center  gap-1 rounded-md"
+        >
           Explore More <MdOutlineArrowRightAlt className="text-2xl" />
-        </button>
+        </Link>
       </div>
 
       {/* Half Bg Layer (Behind Cards, Above Section) */}

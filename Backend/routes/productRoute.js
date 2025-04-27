@@ -92,7 +92,7 @@ router.get(
         return res.status(200).json({
           success: false,
           message: "No products found.",
-          products: [],
+          products: null,
         });
       }
 

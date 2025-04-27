@@ -7,8 +7,8 @@ import TopDiscountProduct from "../Components/Landing/TopDiscountProduct";
 function Home() {
   const [categories, setCategories] = useState([]);
   const [banners, setBanners] = useState([]);
-  const [discountProducts, setDiscountProducts] = useState([])
-  
+  const [discountProducts, setDiscountProducts] = useState([]);
+
   const landingPage = useLandingPage();
   useEffect(() => {
     landingPage(setCategories, setBanners, setDiscountProducts);

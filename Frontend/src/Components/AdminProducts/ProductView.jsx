@@ -22,8 +22,8 @@ function ProductView({ setShowForm, setProductEditId, setUpload }) {
   const productVisible = useProductView();
 
   useEffect(() => {
-    if (!products.length) productVisible();
-  }, [products, productVisible]);
+    productVisible();
+  }, []);
 
   const sliderSettings = {
     dots: true,
@@ -41,13 +41,13 @@ function ProductView({ setShowForm, setProductEditId, setUpload }) {
     setProductEditId(productId);
   };
 
-  if (!products.length && !["Admin", "Moderator"].includes(user?.roles))
-    return <AdminProductShimmer />;
-  if (
-    products[0]?.success === false &&
-    !["Admin", "Moderator"].includes(user?.role)
-  )
-    return <NoProductShimmer />;
+  if (!products) return <NoProductShimmer />;
+
+  if (!products?.length) {
+    if (!["Admin", "Moderator", "Seller"].includes(user?.roles)) {
+      return <AdminProductShimmer />;
+    }
+  }
 
   return (
     <div className="grid gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 p-4">

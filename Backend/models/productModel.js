@@ -87,12 +87,18 @@ const productSchema = new mongoose.Schema(
 
     isBestOffer: {
       type: Boolean,
-      default: null,
     },
 
     isSponsored: {
       type: Boolean,
-      default: false,
+    },
+
+    isPremium: {
+      type: Boolean,
+    },
+
+    banner: {
+      type: String,
     },
 
     sponsorshipDetails: {
